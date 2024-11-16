@@ -53,16 +53,58 @@ Plotly.newPlot('plot', [trace], layout, config);
 
 // Connect to the serial port when the connect button is clicked
 document.getElementById('connectButton').addEventListener('click', async () => {
+    const connectButton = document.getElementById('connectButton');
     try {
-        // Request a serial port and open it with a baud rate of 115200
+        // Request a serial port and open it
         port = await navigator.serial.requestPort();
         await port.open({ baudRate: 115200 });
-        // Enable the start logging button once the port is open
+
+        // Update UI for successful connection
+        connectButton.textContent = 'Connected';
+        connectButton.style.backgroundColor = 'green';
+        connectButton.style.color = 'white';
+        connectButton.disabled = true;
+
+        // Enable logging controls
         document.getElementById('startLoggingButton').disabled = false;
+
+        console.log('Serial port connected.');
+
+        // Start monitoring the connection
+        monitorPortConnection();
     } catch (error) {
-        console.error('Error opening serial port:', error); // Handle any errors that occur
+        console.error('Error connecting to the serial port:', error);
+        alert('Failed to connect to the serial port. Please try again.');
     }
 });
+
+// Periodically monitor the port connection status
+function monitorPortConnection() {
+    // Run monitoring every 5 seconds
+    const monitoringInterval = setInterval(() => {
+        if (port && port.readable && port.writable) {
+            console.log('Port is still connected.');
+        } else {
+            console.log('Port disconnected.');
+            clearInterval(monitoringInterval); // Stop further checks
+            handleDisconnect(); // Handle the disconnection
+        }
+    }, 5000); // Check every 5 seconds
+}
+
+// Handle port disconnection
+function handleDisconnect() {
+    const connectButton = document.getElementById('connectButton');
+    connectButton.textContent = 'Connect to Serial Port';
+    connectButton.style.backgroundColor = '#3e5596';
+    connectButton.style.color = 'white';
+    connectButton.disabled = false;
+
+    document.getElementById('startLoggingButton').disabled = true;
+    document.getElementById('stopLoggingButton').disabled = true;
+
+    console.log('Serial port disconnected.');
+}
 
 // Start logging data when the "Start Logging" button is clicked
 document.getElementById('startLoggingButton').addEventListener('click', async () => {
@@ -88,11 +130,22 @@ document.getElementById('stopLoggingButton').addEventListener('click', () => {
     // Disable both start and stop buttons after stopping
     document.getElementById('startLoggingButton').disabled = true;
     document.getElementById('stopLoggingButton').disabled = true;
+});
 
-    // Release the reader stream lock to stop reading from the serial port
-    if (readerStream) {
-        readerStream.releaseLock();
-        readerStream = null;
+let bufferSize = 100;
+const bufferSizeInput = document.getElementById('bufferSize');
+
+bufferSizeInput.addEventListener('input', (event) => {
+    const value = parseInt(event.target.value, 10);
+
+    // Ensure the entered value is within the valid range
+    if (value >= 10 && value <= 1000) {
+        bufferSize = value;
+        console.log(`Buffer size set to: ${bufferSize}`);
+    } else {
+        // If out of range, reset to the previous valid buffer size
+        alert('Buffer size must be between 10 and 1000.');
+        bufferSizeInput.value = bufferSize;
     }
 });
 
@@ -101,7 +154,7 @@ async function readSerialData(readerStream) {
     const buffer = []; // Temporary buffer to store incoming data
     try {
         // Keep reading data while logging is enabled
-        while (isLogging) {
+        while (true) {
             const { value, done } = await readerStream.read(); // Read incoming data
             if (done) break; // Exit if no more data
 
@@ -118,35 +171,30 @@ async function readSerialData(readerStream) {
                     const currentTime = Date.now();
                     const elapsedSeconds = (currentTime - startTime) / 1000;
 
-                    // Add the new time and value to the respective arrays
-                    timeData.push(elapsedSeconds);
-                    valueData.push(int16Value);
+                    // Only add data to the plot if logging is active
+                    if (isLogging) {
+                        timeData.push(elapsedSeconds);
+                        valueData.push(int16Value);
 
-                    // Limit the data array to the last 100 points for performance
-                    if (timeData.length > 100) {
-                        timeData.shift();
-                        valueData.shift();
+                        // Limit the data array to the last 100 points for performance
+                        if (timeData.length > 100) {
+                            timeData.shift();
+                            valueData.shift();
+                        }
+
+                        // Update the plot with the new data
+                        Plotly.update('plot', { x: [timeData], y: [valueData] });
+
+                        // Automatically scroll by letting Plotly handle the x-axis range dynamically
+                        Plotly.relayout('plot', {
+                            'xaxis.autorange': true // Keep autorange enabled for smooth scrolling
+                        });
                     }
-
-                    // Update the plot with the new data
-                    Plotly.update('plot', { x: [timeData], y: [valueData] });
-
-                    // Automatically scroll by letting Plotly handle the x-axis range dynamically
-                    // Plotly will now automatically adjust the range for the x-axis
-                    Plotly.relayout('plot', {
-                        'xaxis.autorange': true // Keep autorange enabled for smooth scrolling
-                    });
                 }
             }
         }
     } catch (error) {
         console.error('Error reading data from serial port:', error);
-    } finally {
-        // Ensure that the reader stream is released when done
-        if (readerStream) {
-            readerStream.releaseLock();
-            readerStream = null;
-        }
     }
 }
 

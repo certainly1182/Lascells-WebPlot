@@ -10,6 +10,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <script>
+        if (!('serial' in navigator)) {
+            const unsupportedMessage = document.createElement('div');
+            unsupportedMessage.className = 'unsupported-browser-message';
+            unsupportedMessage.innerText = 'Your browser does not support the Web Serial API. Please use a supported browser like Google Chrome or Microsoft Edge.';
+            document.body.appendChild(unsupportedMessage);
+        }
+    </script>
 </head>
     
 <body>
@@ -25,6 +33,18 @@
         <button id="saveButton">Save Data as CSV</button>
         <button id="startLoggingButton" disabled>Start Logging</button>
         <button id="stopLoggingButton" disabled>Stop Logging</button>
+        <label for="bufferSize" style="margin-right: 10px;">Buffer Size:</label>
+        <input
+            type="number"
+            id="bufferSize"
+            name="bufferSize"
+            min="10"
+            max="1000"
+            step="10"
+            value="100"
+            style="width: 80px;"
+            title="Enter or select buffer size (10 - 1000)"
+        >
     </div>
     <!-- Div where the plot will be rendered -->
     <div id="plot" style="width: 100%; height: 800px;"></div>

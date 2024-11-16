@@ -22,6 +22,18 @@ header img {
     height: auto;
 }
 
+.unsupported-browser-message {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: #ffcccb;
+    color: #000;
+    padding: 10px;
+    text-align: center;
+    z-index: 1000;
+}
+
 h1 {
     font-weight: 800;
     color: #3e5596;
@@ -50,6 +62,27 @@ button:disabled {
 button:hover {
     background-color: #4b76ce;
 }
+
+#connectButton {
+    background-color: #3e5596;
+    color: white;
+    transition: background-color 0.3s ease;
+}
+
+#bufferSize {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 16px;
+    padding: 5px;
+    border: 1px solid #3e5596;
+    border-radius: 5px;
+    text-align: center;
+}
+#bufferSize:focus {
+    outline: none;
+    border-color: #4b76ce;
+    box-shadow: 0 0 5px rgba(75, 118, 206, 0.5);
+}
+
 
 .modebar-btn {
     font-size: 24px;  /* Increase button font size */
