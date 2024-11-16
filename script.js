@@ -37,13 +37,18 @@ const layout = {
         color: 'black',
         size: 18
     },
+    margin: {
+        t: 20,
+        r: 20,
+        pad: 5
+    }, title: false
 };
 
 // Define config of the plot
 const config = {
     displaylogo: false,
     reponsive: true,
-    displayModeBar: true,
+    displayModeBar: false,
     modeBarButtonsToRemove: ['zoom'],
     scrollZoom: true,
 };
@@ -60,9 +65,7 @@ document.getElementById('connectButton').addEventListener('click', async () => {
         await port.open({ baudRate: 115200 });
 
         // Update UI for successful connection
-        connectButton.textContent = 'Connected';
         connectButton.style.backgroundColor = 'green';
-        connectButton.style.color = 'white';
         connectButton.disabled = true;
 
         // Enable logging controls
@@ -95,9 +98,7 @@ function monitorPortConnection() {
 // Handle port disconnection
 function handleDisconnect() {
     const connectButton = document.getElementById('connectButton');
-    connectButton.textContent = 'Connect to Serial Port';
-    connectButton.style.backgroundColor = '#3e5596';
-    connectButton.style.color = 'white';
+    connectButton.style.backgroundColor = 'red';
     connectButton.disabled = false;
 
     document.getElementById('startLoggingButton').disabled = true;
@@ -221,4 +222,34 @@ document.getElementById('saveButton').addEventListener('click', () => {
     link.setAttribute("href", url);
     link.setAttribute("download", "data.csv"); // Set default file name
     link.click(); // Trigger the download
+});
+
+// Function to save the plot as a PNG image
+document.getElementById('savePlotButton').addEventListener('click', function() {
+    var plotDiv = document.getElementById('plot');
+    Plotly.downloadImage(plotDiv, {
+        format: 'png',
+        width: 1200,
+        height: 800,
+        filename: 'datalogger_plot'
+    });
+});
+
+// Function to auto-scale the plot
+document.getElementById('autoScaleButton').addEventListener('click', function() {
+    var plotDiv = document.getElementById('plot');
+
+    var currentLayout = plotDiv.layout;
+
+    // Reset the axis ranges to auto-scale based on current data
+    Plotly.relayout(plotDiv, {
+        xaxis: {
+            autorange: true,
+            title: currentLayout.xaxis.title
+        },
+        yaxis: {
+            autorange: true,
+            title: currentLayout.yaxis.title
+        }
+    });
 });

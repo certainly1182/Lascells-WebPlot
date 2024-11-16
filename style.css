@@ -1,13 +1,20 @@
 /* General Page Styling */
+/* Reset margin and padding for the body and html */
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%; /* Ensure full height of the viewport */
+    overflow: hidden; /* Prevent scrolling */
+}
+
+/* Add Flexbox layout for the body */
 body {
     font-family: 'Open Sans', sans-serif;
     background-color: white;
     color: #3e5596;
-    margin: 0;
-    padding: 0;
     display: flex;
     flex-direction: column;
-    height: 100vh;
+    height: 100vh; /* Full viewport height */
 }
 
 header {
@@ -64,7 +71,7 @@ button:hover {
 }
 
 #connectButton {
-    background-color: #3e5596;
+    background-color: red;
     color: white;
     transition: background-color 0.3s ease;
 }
@@ -72,7 +79,7 @@ button:hover {
 #bufferSize {
     font-family: 'Open Sans', sans-serif;
     font-size: 16px;
-    padding: 5px;
+    padding: 10px 20px;
     border: 1px solid #3e5596;
     border-radius: 5px;
     text-align: center;
@@ -92,27 +99,28 @@ button:hover {
 
 /* Change the hover state of modebar buttons */
 .modebar-btn:hover {
-    background-color: #4b76ce;  /* Darker green on hover */
+    background-color: #4b76ce;
 }
 
 /* Plot Styling */
 #plot {
     flex-grow: 1;
+    width: 100%;
     font-family: 'Open Sans', sans-serif;
-    /* margin-top: 20px; */
-    /* border: 2px solid #3e5596; */
-    /* border-radius: 10px; */
     background-color: white;
-    /* padding: 10px; */
-    height: 100%;
     margin-bottom: 20px;
 }
 
 /* Layout Styling */
 .buttons-container {
     display: flex;
-    justify-content: center;
+    justify-content: left;
     flex-wrap: wrap;
+    align-items: center;
+}
+
+.right-aligned {
+    margin-left: auto; /* Pushes this button to the right */
 }
 
 footer {
