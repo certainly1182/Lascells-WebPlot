@@ -6,13 +6,17 @@ let isLogging = false;
 const timeData = [];  // Stores time data for x-axis
 const valueData = []; // Stores sensor data for y-axis
 
-// Define the trace for the Plotly plot
+// Set up the streaming trace for Plotly
 const trace = {
-    x: timeData,
-    y: valueData,
+    x: [],
+    y: [],
     type: 'scatter',
     mode: 'lines+markers',
-    name: 'Data'
+    name: 'Data',
+    stream: {
+        token: 'MU/TH/UR',  // You can define the stream token (This should be a unique value)
+        maxpoints: 100               // The number of points to keep in the plot
+    }
 };
 
 // Define layout of the plot
@@ -22,8 +26,7 @@ const layout = {
         title: 'Time (s)',
         color: 'black',
         range: [0, 10],
-        dtick: 1,
-        tickmode: 'linear',
+        fixedrange: false,
         tick0: 0,
         showgrid: true,
     },
@@ -41,7 +44,8 @@ const layout = {
         t: 20,
         r: 20,
         pad: 5
-    }, title: false
+    },
+    title: false
 };
 
 // Define config of the plot
@@ -52,6 +56,15 @@ const config = {
     modeBarButtonsToRemove: ['zoom'],
     scrollZoom: true,
 };
+
+// Hide unsupported browser version message if WebSerial is supported
+document.addEventListener('DOMContentLoaded', () => {
+    const notSupported = document.getElementById('notSupported');
+
+    if ('serial' in navigator) {
+        notSupported.style.display = 'none'; // Hide the box
+    }
+});
 
 // Create an initial empty plot
 Plotly.newPlot('plot', [trace], layout, config);
@@ -110,10 +123,9 @@ function handleDisconnect() {
 // Start logging data when the "Start Logging" button is clicked
 document.getElementById('startLoggingButton').addEventListener('click', async () => {
     // Clear previous data and initialize start time
-    timeData.length = 0;
-    valueData.length = 0;
     startTime = Date.now();
     isLogging = true;
+    
     // Disable the start button and enable stop button
     document.getElementById('startLoggingButton').disabled = true;
     document.getElementById('stopLoggingButton').disabled = false;
@@ -174,22 +186,17 @@ async function readSerialData(readerStream) {
 
                     // Only add data to the plot if logging is active
                     if (isLogging) {
-                        timeData.push(elapsedSeconds);
-                        valueData.push(int16Value);
+                        // Send the new data to the Plotly stream
+                        Plotly.extendTraces('plot', {
+                            x: [[elapsedSeconds]],
+                            y: [[int16Value]]
+                        }, [0]);
 
-                        // Limit the data array to the last 100 points for performance
-                        if (timeData.length > 100) {
-                            timeData.shift();
-                            valueData.shift();
+                        // Limit the number of points in the stream (for performance)
+                        if (trace.stream.maxpoints && timeData.length > trace.stream.maxpoints) {
+                            // Ensure the stream only keeps the max number of points
+                            Plotly.relayout('plot', { 'xaxis.range': [elapsedSeconds - 10, elapsedSeconds] });
                         }
-
-                        // Update the plot with the new data
-                        Plotly.update('plot', { x: [timeData], y: [valueData] });
-
-                        // Automatically scroll by letting Plotly handle the x-axis range dynamically
-                        Plotly.relayout('plot', {
-                            'xaxis.autorange': true // Keep autorange enabled for smooth scrolling
-                        });
                     }
                 }
             }
@@ -201,12 +208,9 @@ async function readSerialData(readerStream) {
 
 // Reset data when the "Reset Data" button is clicked
 document.getElementById('resetButton').addEventListener('click', () => {
-    timeData.length = 0;
-    valueData.length = 0;
-    startTime = null;
-    // Update the plot with the empty data arrays
-    Plotly.update('plot', { x: [timeData], y: [valueData] });
-    // Enable the start logging button for future use
+    Plotly.purge('plot');  // Clear the plot
+    // Create a new plot with an empty stream
+    Plotly.newPlot('plot', [trace], layout, config);
     document.getElementById('startLoggingButton').disabled = false;
 });
 

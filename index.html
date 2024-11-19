@@ -1,23 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live Data Plot with Web Serial API</title>
-
+    <title>Lascells Datalogger</title>
+    <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>
+        // Redirect to HTTPS if HTTP is requested.
+        if (window.location.protocol === 'http:') {
+          window.location.href = 'https:' + window.location.href.substring(5);
+        }
+    </script>
+
     <script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-    <script>
-        if (!('serial' in navigator)) {
-            const unsupportedMessage = document.createElement('div');
-            unsupportedMessage.className = 'unsupported-browser-message';
-            unsupportedMessage.innerText = 'Your browser does not support the Web Serial API. Please use a supported browser like Google Chrome or Microsoft Edge.';
-            document.body.appendChild(unsupportedMessage);
-        }
-    </script>
+    <link rel="stylesheet" href="style.css?v=1">
 </head>
     
 <body>
@@ -26,6 +26,10 @@
     </header>
 
     <h1>Datalogger</h1>
+    <div id="notSupported">
+        Sorry, <b>Web Serial</b> is not supported on this device, make sure you're
+        running Chrome/Edge 89 or later.
+    </div>
     <!-- Container for buttons -->
     <div class="buttons-container">
         <button id="connectButton" title="Connect to the serial port">
@@ -78,8 +82,22 @@
             <a href="https://www.instagram.com/lascellsscience/" target="_blank"><i class="fab fa-instagram"></i></a>
         </div>
     </footer>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                .then((registration) => {
+                    console.log('Service Worker registered with scope:', registration.scope);
+                })
+                .catch((error) => {
+                    console.error('Service Worker registration failed:', error);
+                });
+            });
+        }
+    </script>
     
     <!-- Link to the external JavaScript file -->
-    <script src="script.js"></script>
+    <script src="script.js?v=1"></script>
 </body>
 </html>

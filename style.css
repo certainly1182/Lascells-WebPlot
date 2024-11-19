@@ -47,6 +47,15 @@ h1 {
     text-align: center;
 }
 
+#notSupported {
+    background-color: red;
+    color: white;
+    padding: 1em;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    text-align: center;
+}
+
 /* Buttons Styling */
 button {
     font-family: 'Open Sans', sans-serif;
