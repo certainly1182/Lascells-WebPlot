@@ -143,6 +143,7 @@ document.getElementById('stopLoggingButton').addEventListener('click', () => {
     // Disable both start and stop buttons after stopping
     document.getElementById('startLoggingButton').disabled = true;
     document.getElementById('stopLoggingButton').disabled = true;
+    document.getElementById('resetButton').disabled = false;
 });
 
 let bufferSize = 100;
@@ -162,9 +163,8 @@ bufferSizeInput.addEventListener('input', (event) => {
     }
 });
 
-// Function to read data from the serial port and update the plot
 async function readSerialData(readerStream) {
-    const buffer = []; // Temporary buffer to store incoming data
+    let buffer = ''; // Temporary buffer to store incoming string data
     try {
         // Keep reading data while logging is enabled
         while (true) {
@@ -172,24 +172,38 @@ async function readSerialData(readerStream) {
             if (done) break; // Exit if no more data
 
             if (value) {
-                // Convert the incoming value to a Uint8Array
-                const rawBytes = new Uint8Array(value);
-                buffer.push(...rawBytes);
+                // Convert the incoming value to a text string
+                const text = new TextDecoder().decode(value);
+                buffer += text; // Append incoming data to the buffer
 
-                // Process data when there are at least 2 bytes (16-bit value)
-                while (buffer.length >= 2) {
-                    // Convert the first 2 bytes to an integer (little-endian)
-                    const int16Value = new DataView(new Uint8Array(buffer.splice(0, 2)).buffer).getInt16(0, true);
+                // Process data when a complete value ends with "\r\n"
+                let endIndex;
+                while ((endIndex = buffer.indexOf("\r\n")) !== -1) {
+                    // Extract a complete data string up to ",\r\n"
+                    const dataString = buffer.slice(0, endIndex);
+                    buffer = buffer.slice(endIndex + 3); // Remove processed data from the buffer
+
+                    // Parse the value as an integer
+                    const parsedValue = parseInt(dataString, 10);
+                    if (isNaN(parsedValue)) {
+                        console.error('Invalid data received:', dataString);
+                        continue;
+                    }
+
                     // Calculate elapsed time in seconds
                     const currentTime = Date.now();
                     const elapsedSeconds = (currentTime - startTime) / 1000;
 
                     // Only add data to the plot if logging is active
                     if (isLogging) {
+                        // Update the data arrays
+                        timeData.push(elapsedSeconds);
+                        valueData.push(parsedValue);
+
                         // Send the new data to the Plotly stream
                         Plotly.extendTraces('plot', {
                             x: [[elapsedSeconds]],
-                            y: [[int16Value]]
+                            y: [[parsedValue]]
                         }, [0]);
 
                         // Limit the number of points in the stream (for performance)
@@ -208,9 +222,29 @@ async function readSerialData(readerStream) {
 
 // Reset data when the "Reset Data" button is clicked
 document.getElementById('resetButton').addEventListener('click', () => {
-    Plotly.purge('plot');  // Clear the plot
-    // Create a new plot with an empty stream
-    Plotly.newPlot('plot', [trace], layout, config);
+    // Clear the timeData and valueData arrays
+    timeData.length = 0;
+    valueData.length = 0;
+
+    // Reinitialize the trace object to clear any old data
+    const newTrace = {
+        x: [],
+        y: [],
+        type: 'scatter',
+        mode: 'lines+markers',
+        name: 'Data',
+        stream: {
+            token: 'MU/TH/UR', // Same stream token
+            maxpoints: 100 // Same max points
+        }
+    };
+
+    // Clear the plot
+    Plotly.purge('plot');
+    // Create a new plot with the reinitialized trace
+    Plotly.newPlot('plot', [newTrace], layout, config);
+
+    // Enable the start logging button again
     document.getElementById('startLoggingButton').disabled = false;
 });
 

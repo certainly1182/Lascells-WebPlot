@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
     <title>Lascells Datalogger</title>
-    <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -82,20 +81,6 @@
             <a href="https://www.instagram.com/lascellsscience/" target="_blank"><i class="fab fa-instagram"></i></a>
         </div>
     </footer>
-
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/service-worker.js')
-                .then((registration) => {
-                    console.log('Service Worker registered with scope:', registration.scope);
-                })
-                .catch((error) => {
-                    console.error('Service Worker registration failed:', error);
-                });
-            });
-        }
-    </script>
     
     <!-- Link to the external JavaScript file -->
     <script src="script.js?v=1"></script>
