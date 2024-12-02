@@ -64,6 +64,27 @@ document.addEventListener('DOMContentLoaded', () => {
     if ('serial' in navigator) {
         notSupported.style.display = 'none'; // Hide the box
     }
+
+    const selectProductButton = document.getElementById("selectProductButton");
+    const productMenu = document.getElementById("productMenu");
+    const closeProductMenu = document.getElementById("closeProductMenu");
+
+    // Open modal
+    selectProductButton.addEventListener("click", () => {
+        productMenu.style.display = "block";
+    });
+
+    // Close modal
+    closeProductMenu.addEventListener("click", () => {
+        productMenu.style.display = "none";
+    });
+
+    // Close modal when clicking outside of the modal content
+    window.addEventListener("click", (event) => {
+        if (event.target === productMenu) {
+            productMenu.style.display = "none";
+        }
+    });
 });
 
 // Create an initial empty plot
@@ -126,6 +147,42 @@ document.getElementById('startLoggingButton').addEventListener('click', async ()
     startTime = Date.now();
     isLogging = true;
     
+    // Disable the dropdown menus
+    document.getElementById('samplingPeriod').disabled = true;
+    document.getElementById('voltageRange').disabled = true;
+    
+    // Get the selected values from the dropdowns
+    const samplingPeriod = document.getElementById('samplingPeriod').value;
+    const voltageRange = document.getElementById('voltageRange').value;
+    
+    // Map the dropdown values to corresponding UART codes
+    const samplingCode = {
+        "10": "1",
+        "100": "2",
+        "1000": "3",
+        "10000": "4",
+        "60000": "5"
+    }[samplingPeriod];
+
+    const voltageCode = {
+        "auto": "A",
+        "200mV": "B",
+        "2V": "C",
+        "20V": "D"
+    }[voltageRange];
+
+    const commandString = `>${samplingCode}${voltageCode}\r\n`;
+    console.log(`Sending UART command: ${commandString}`);
+
+    // Send the command string over UART
+    if (port && port.writable) {
+        const writer = port.writable.getWriter();
+        await writer.write(new TextEncoder().encode(commandString));
+        writer.releaseLock();
+    } else {
+        console.error('Serial port not writable');
+    }
+
     // Disable the start button and enable stop button
     document.getElementById('startLoggingButton').disabled = true;
     document.getElementById('stopLoggingButton').disabled = false;
@@ -144,23 +201,6 @@ document.getElementById('stopLoggingButton').addEventListener('click', () => {
     document.getElementById('startLoggingButton').disabled = true;
     document.getElementById('stopLoggingButton').disabled = true;
     document.getElementById('resetButton').disabled = false;
-});
-
-let bufferSize = 100;
-const bufferSizeInput = document.getElementById('bufferSize');
-
-bufferSizeInput.addEventListener('input', (event) => {
-    const value = parseInt(event.target.value, 10);
-
-    // Ensure the entered value is within the valid range
-    if (value >= 10 && value <= 1000) {
-        bufferSize = value;
-        console.log(`Buffer size set to: ${bufferSize}`);
-    } else {
-        // If out of range, reset to the previous valid buffer size
-        alert('Buffer size must be between 10 and 1000.');
-        bufferSizeInput.value = bufferSize;
-    }
 });
 
 async function readSerialData(readerStream) {
@@ -246,6 +286,9 @@ document.getElementById('resetButton').addEventListener('click', () => {
 
     // Enable the start logging button again
     document.getElementById('startLoggingButton').disabled = false;
+    // Enable the dropdown menus
+    document.getElementById('samplingPeriod').disabled = false;
+    document.getElementById('voltageRange').disabled = false;
 });
 
 // Save data as CSV when the "Save Data as CSV" button is clicked

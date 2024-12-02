@@ -43,18 +43,30 @@
         <button id="stopLoggingButton" disabled title="Stop logging the data">
             <i class="fas fa-stop"></i>
         </button>
-        <label for="bufferSize" style="margin-right: 10px;">Buffer Size:</label>
-        <input
-            type="number"
-            id="bufferSize"
-            name="bufferSize"
-            min="10"
-            max="1000"
-            step="10"
-            value="100"
-            style="width: 80px;"
-            title="Enter or select buffer size (10 - 1000)"
-        >
+
+        <!-- Sampling Period Dropdown -->
+        <label for="samplingPeriod" style="margin-left: 10px;">Sampling Period:</label>
+        <select id="samplingPeriod" name="samplingPeriod" style="margin-right: 10px;">
+            <option value="10">10 ms</option>
+            <option value="100">100 ms</option>
+            <option value="1000">1 s</option>
+            <option value="10000">10 s</option>
+            <option value="60000">60 s</option>
+        </select>
+
+        <!-- Voltage Range Dropdown -->
+        <label for="voltageRange" style="margin-left: 10px;">Voltage Range:</label>
+        <select id="voltageRange" name="voltageRange" style="margin-right: 10px;">
+            <option value="auto">Auto</option>
+            <option value="200mV">0-200 mV</option>
+            <option value="2V">0-2 V</option>
+            <option value="20V">0-20 V</option>
+        </select>
+
+        <button id="selectProductButton" title="Select a product">
+            <i class="fas fa-box-open"></i> Select Product
+        </button>
+        
         <button id="saveButton" title="Save data as a CSV file" class="right-aligned">
             <i class="fas fa-download"></i>
         </button>
@@ -65,6 +77,48 @@
             <i class="fas fa-expand"></i>
         </button>
     </div>
+
+    <!-- Fullscreen Product Menu Modal -->
+    <div id="productMenu" class="modal">
+        <div class="modal-content">
+            <button id="closeProductMenu" class="close-button">&times;</button>
+            <h2>Select a Product</h2>
+            <div class="product-grid">
+                <!-- Example product tiles -->
+                <div class="product-tile">
+                    <img src="products/LA10-550_hall_effect_probe.webp" alt="Hall Effect Probe">
+                    <h3>Hall Effect Probe</h3>
+                    <p>SKU: LA10-550B</p>
+                    <a href="https://lascells.com/product/hall-effect-probe/" target="_blank">View Details</a>
+                </div>
+                <div class="product-tile">
+                    <img src="products/LA10-990-E-Field-Detector.webp" alt="E-Field Detector">
+                    <h3>E-Field Detector</h3>
+                    <p>SKU: LA10-990</p>
+                    <a href="https://lascells.com/product/e-field-detector/" target="_blank">View Details</a>
+                </div>
+                <div class="product-tile">
+                    <img src="products/LA30-217_Boyles_law.webp" alt="Boyles Law Digital Apparatus">
+                    <h3>Boyles Law Digital Apparatus</h3>
+                    <p>SKU: LA30-217</p>
+                    <a href="https://lascells.com/product/boyles-law-digital-apparatus/" target="_blank">View Details</a>
+                </div>
+                <div class="product-tile">
+                    <img src="products/LA30-216_digital_joly.webp" alt="Digital Jolly Bulb">
+                    <h3>Digital Jolly Bulb</h3>
+                    <p>SKU: LA30-216</p>
+                    <a href="https://lascells.com/product/digital-jolly-bulb/" target="_blank">View Details</a>
+                </div>
+                <div class="product-tile">
+                    <img src="products/LA20-875_Maluss_law.webp" alt="Malus' Law">
+                    <h3>Malus' Law</h3>
+                    <p>SKU: LA20-875</p>
+                    <a href="https://lascells.com/product/malus-law/" target="_blank">View Details</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Div where the plot will be rendered -->
     <div id="plot"></div>
     

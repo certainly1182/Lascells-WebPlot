@@ -167,3 +167,120 @@ footer {
 .footer-right i {
     font-size: 20px;
 }
+
+/* General Dropdown Styling */
+select {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 16px;
+    padding: 10px 20px;
+    border: 1px solid #3e5596;
+    border-radius: 5px;
+    background-color: white;
+    color: #3e5596;
+    cursor: pointer;
+    margin: 10px;
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+select:focus {
+    outline: none;
+    border-color: #4b76ce;
+    box-shadow: 0 0 5px rgba(75, 118, 206, 0.5);
+    background-color: #eaf1fc;
+}
+
+select:hover {
+    border-color: #4b76ce;
+    background-color: #eaf1fc;
+}
+
+/* Modal Styles */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+    overflow-y: auto;
+}
+
+.modal-content {
+    margin: 5% auto;
+    background-color: #fff;
+    padding: 20px;
+    width: 80%;
+    max-width: 1000px;
+    border-radius: 8px;
+    position: relative;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.close-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 24px;
+    color: #000;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+h2 {
+    text-align: center;
+    color: #3e5596;
+    margin-bottom: 20px;
+}
+
+/* Product Grid Styles */
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.product-tile {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.product-tile img {
+    max-width: 100%;
+    border-radius: 8px;
+}
+
+.product-tile h3 {
+    margin: 10px 0;
+    color: #3e5596;
+}
+
+.product-tile p {
+    color: #777;
+    font-size: 14px;
+}
+
+.product-tile a {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 10px 15px;
+    background-color: #3e5596;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.product-tile:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.product-tile a:hover {
+    background-color: #4b76ce;
+}
