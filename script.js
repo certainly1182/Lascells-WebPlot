@@ -350,6 +350,26 @@ document.getElementById('autoScaleButton').addEventListener('click', function() 
     });
 });
 
+document.getElementById('zoomButton').addEventListener('click', function() {
+    const plotDiv = document.getElementById('plot');
+    
+    // Trigger Plotly's modebar zoom mode
+    Plotly.relayout(plotDiv, {
+        'dragmode': 'zoom'  // Set dragmode to 'zoom'
+    });
+    
+    // Add event listener for when zooming is complete
+    plotDiv.on('plotly_relayout', function(eventData) {
+        // Check if zooming occurred (there will be changes in the xaxis or yaxis ranges)
+        if (eventData['xaxis.range[0]'] || eventData['yaxis.range[0]']) {
+            // Automatically return to pan mode after zooming
+            Plotly.relayout(plotDiv, {
+                'dragmode': 'pan'  // Set dragmode back to pan
+            });
+        }
+    });
+});
+
 // Function to update the x-axis title dynamically
 function updateYAxisTitle(unit) {
     const plotDiv = document.getElementById('plot');
