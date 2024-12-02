@@ -3,6 +3,7 @@ let port;
 let readerStream = null;
 let startTime = null;
 let isLogging = false;
+let scalingFactor = 1;
 const timeData = [];  // Stores time data for x-axis
 const valueData = []; // Stores sensor data for y-axis
 
@@ -31,7 +32,7 @@ const layout = {
         showgrid: true,
     },
     yaxis: {
-        title: 'Value',
+        title: 'Voltage (V)',
         color: 'black'
     },
     dragmode: 'pan',
@@ -61,8 +62,8 @@ const config = {
 document.addEventListener('DOMContentLoaded', () => {
     const notSupported = document.getElementById('notSupported');
 
-    if ('serial' in navigator) {
-        notSupported.style.display = 'none'; // Hide the box
+    if (!('serial' in navigator)) {
+        notSupported.style.display = 'block'; // Show the box
     }
 
     const selectProductButton = document.getElementById("selectProductButton");
@@ -84,6 +85,30 @@ document.addEventListener('DOMContentLoaded', () => {
         if (event.target === productMenu) {
             productMenu.style.display = "none";
         }
+    });
+
+    // Attach click listeners to each product tile
+    const productTiles = document.querySelectorAll('.product-tile');
+    productTiles.forEach(tile => {
+        tile.addEventListener('click', () => {
+            // Remove the 'active' class from all tiles
+            productTiles.forEach(t => t.classList.remove('active'));
+            
+            // Add the 'active' class to highlight the clicked tile
+            tile.classList.add('active');
+
+            // Retrieve unit and scaling factor for the selected product
+            const unit = tile.getAttribute('data-unit');
+            const tileScalingFactor = parseFloat(tile.getAttribute('data-scaling-factor'));
+
+            // Update plot y-axis title
+            updateYAxisTitle(unit);
+
+            // Update the scaling factor for voltage data
+            updateScalingFactor(tileScalingFactor);
+
+            console.log(`Selected product with unit: ${unit}, scale: ${scale}`);
+        });
     });
 });
 
@@ -206,49 +231,39 @@ document.getElementById('stopLoggingButton').addEventListener('click', () => {
 async function readSerialData(readerStream) {
     let buffer = ''; // Temporary buffer to store incoming string data
     try {
-        // Keep reading data while logging is enabled
         while (true) {
             const { value, done } = await readerStream.read(); // Read incoming data
             if (done) break; // Exit if no more data
 
             if (value) {
-                // Convert the incoming value to a text string
                 const text = new TextDecoder().decode(value);
-                buffer += text; // Append incoming data to the buffer
+                buffer += text;
 
-                // Process data when a complete value ends with "\r\n"
                 let endIndex;
                 while ((endIndex = buffer.indexOf("\r\n")) !== -1) {
-                    // Extract a complete data string up to ",\r\n"
                     const dataString = buffer.slice(0, endIndex);
-                    buffer = buffer.slice(endIndex + 3); // Remove processed data from the buffer
+                    buffer = buffer.slice(endIndex + 3);
 
-                    // Parse the value as an integer
-                    const parsedValue = parseInt(dataString, 10);
-                    if (isNaN(parsedValue)) {
+                    const rawValue = parseFloat(dataString);
+                    if (isNaN(rawValue)) {
                         console.error('Invalid data received:', dataString);
                         continue;
                     }
 
-                    // Calculate elapsed time in seconds
+                    const scaledValue = rawValue * currentScaleFactor; // Apply scaling
                     const currentTime = Date.now();
                     const elapsedSeconds = (currentTime - startTime) / 1000;
 
-                    // Only add data to the plot if logging is active
                     if (isLogging) {
-                        // Update the data arrays
                         timeData.push(elapsedSeconds);
-                        valueData.push(parsedValue);
+                        valueData.push(scaledValue);
 
-                        // Send the new data to the Plotly stream
                         Plotly.extendTraces('plot', {
                             x: [[elapsedSeconds]],
-                            y: [[parsedValue]]
+                            y: [[scaledValue]]
                         }, [0]);
 
-                        // Limit the number of points in the stream (for performance)
                         if (trace.stream.maxpoints && timeData.length > trace.stream.maxpoints) {
-                            // Ensure the stream only keeps the max number of points
                             Plotly.relayout('plot', { 'xaxis.range': [elapsedSeconds - 10, elapsedSeconds] });
                         }
                     }
@@ -294,7 +309,7 @@ document.getElementById('resetButton').addEventListener('click', () => {
 // Save data as CSV when the "Save Data as CSV" button is clicked
 document.getElementById('saveButton').addEventListener('click', () => {
     // Create CSV string from timeData and valueData arrays
-    const csvContent = "Time (s),Value\n" + timeData.map((t, i) => `${t},${valueData[i]}`).join("\n");
+    const csvContent = "Time (s),Voltage\n" + timeData.map((t, i) => `${t},${valueData[i]}`).join("\n");
     // Create a Blob object with the CSV content
     const blob = new Blob([csvContent], { type: "text/csv" });
     // Create a temporary URL for downloading the Blob as a file
@@ -334,3 +349,11 @@ document.getElementById('autoScaleButton').addEventListener('click', function() 
         }
     });
 });
+
+// Function to update the x-axis title dynamically
+function updateYAxisTitle(unit) {
+    const plotDiv = document.getElementById('plot');
+    Plotly.relayout(plotDiv, {
+        'yaxis.title.text': `${unit}`
+    });
+}
