@@ -105,7 +105,12 @@ document.addEventListener('DOMContentLoaded', () => {
             updateYAxisTitle(unit);
 
             // Update the scaling factor for voltage data
-            updateScalingFactor(tileScalingFactor);
+            scalingFactor = tileScalingFactor;
+            
+            // Get the name of the selected product
+            const productName = tile.querySelector('h3').textContent;
+            // Update the current product display
+            document.getElementById('currentProduct').textContent = `Logging: ${productName}`;
 
             console.log(`Selected product with unit: ${unit}, scale: ${scale}`);
         });
@@ -240,17 +245,18 @@ async function readSerialData(readerStream) {
                 buffer += text;
 
                 let endIndex;
-                while ((endIndex = buffer.indexOf("\r\n")) !== -1) {
+                while ((endIndex = buffer.indexOf("\n\r")) !== -1) {
                     const dataString = buffer.slice(0, endIndex);
-                    buffer = buffer.slice(endIndex + 3);
+                    buffer = buffer.slice(endIndex + 2);
+                    
+                    const rawValue = parseFloat(dataString.trim());
 
-                    const rawValue = parseFloat(dataString);
                     if (isNaN(rawValue)) {
                         console.error('Invalid data received:', dataString);
                         continue;
                     }
 
-                    const scaledValue = rawValue * currentScaleFactor; // Apply scaling
+                    const scaledValue = rawValue * scalingFactor; // Apply scaling
                     const currentTime = Date.now();
                     const elapsedSeconds = (currentTime - startTime) / 1000;
 
@@ -377,3 +383,23 @@ function updateYAxisTitle(unit) {
         'yaxis.title.text': `${unit}`
     });
 }
+
+// Handle Clear Selection button
+document.getElementById('clearSelectionButton').addEventListener('click', function() {
+    // Remove the 'active' class from any selected product tile
+    const activeProductTiles = document.querySelectorAll('.product-tile.active');
+    activeProductTiles.forEach(tile => {
+        tile.classList.remove('active');
+    });
+
+    // Update plot y-axis title
+    updateYAxisTitle('Voltage (V)');
+
+    // Update the scaling factor for voltage data
+    scalingFactor = 1;
+    
+    // Update the current product display
+    document.getElementById('currentProduct').textContent = `No product selected`;
+    
+    console.log(`Cleared product selection`);
+});

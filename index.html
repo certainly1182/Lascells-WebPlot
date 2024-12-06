@@ -22,9 +22,13 @@
 <body>
     <header>
         <img src="lascells_Logo_Blue.png" alt="Logo">
+        <div id="currentProduct" class="current-product">
+            No product selected
+        </div>
     </header>
 
     <h1>Datalogger</h1>
+
     <div id="notSupported">
         Sorry, <b>Web Serial</b> is not supported on this device, make sure you're
         running Chrome/Edge 89 or later.
@@ -45,8 +49,8 @@
         </button>
 
         <!-- Sampling Period Dropdown -->
-        <label for="samplingPeriod" style="margin-left: 10px;">Sampling Period:</label>
-        <select id="samplingPeriod" name="samplingPeriod" style="margin-right: 10px;">
+        <label for="samplingPeriod">Period:</label>
+        <select id="samplingPeriod" name="samplingPeriod">
             <option value="10">10 ms</option>
             <option value="100">100 ms</option>
             <option value="1000">1 s</option>
@@ -55,12 +59,11 @@
         </select>
 
         <!-- Voltage Range Dropdown -->
-        <label for="voltageRange" style="margin-left: 10px;">Voltage Range:</label>
-        <select id="voltageRange" name="voltageRange" style="margin-right: 10px;">
-            <option value="auto">Auto</option>
-            <option value="200mV">0 - 200 mV</option>
-            <option value="2V">0 - 2 V</option>
-            <option value="20V">0 - 20 V</option>
+        <label for="voltageRange">Range:</label>
+        <select id="voltageRange" name="voltageRange">
+            <option value="200mV">-1 to +1 V</option>
+            <option value="2V">-5 to +5 V</option>
+            <option value="20V">-50 to +50 V</option>
         </select>
 
         <button id="selectProductButton" title="Select a product">
@@ -87,7 +90,7 @@
             <button id="closeProductMenu" class="close-button">&times;</button>
             <h2>Select a Product</h2>
             <div class="product-grid">
-                <!-- Example product tiles -->
+                <!-- Product tiles -->
                 <div class="product-tile"
                     data-unit="Millitesla (mT)"
                     data-scale="32">
@@ -129,6 +132,11 @@
                     <a href="https://lascells.com/product/malus-law/" target="_blank">View Details</a>
                 </div>
             </div>
+
+            <!-- Clear selection button -->
+            <button id="clearSelectionButton" class="clear-selection-btn">
+                Clear Selection
+            </button>
         </div>
     </div>
 
@@ -150,6 +158,6 @@
     </footer>
     
     <!-- Link to the external JavaScript file -->
-    <script src="script.js?v=1"></script>
+    <script src="script.js"></script>
 </body>
 </html>

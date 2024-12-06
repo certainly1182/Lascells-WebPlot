@@ -1,4 +1,7 @@
-/* General Page Styling */
+/* ==========================
+   General Page Styling
+   ========================== */
+
 /* Reset margin and padding for the body and html */
 html, body {
     margin: 0;
@@ -17,18 +20,36 @@ body {
     height: 100vh; /* Full viewport height */
 }
 
-header {
+/* ==========================
+   Header Styles
+   ========================== */
+   header {
     position: absolute;
     top: 20px;
     left: 20px;
-    z-index: 10;  /* Ensure the logo stays on top */
+    right: 20px; /* Allow space for product display on the right */
+    display: flex;
+    justify-content: space-between; /* This will space out the logo and product label */
+    z-index: 10; /* Ensure the logo and product label stay on top */
 }
 
 header img {
-    width: 200px;  /* Adjust the size of the logo */
+    width: 200px; /* Adjust the size of the logo */
     height: auto;
 }
 
+#currentProduct {
+    font-size: 16px;
+    font-weight: 600;
+    color: #3e5596;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ==========================
+   Unsupported Browser Message
+   ========================== */
 .unsupported-browser-message {
     position: fixed;
     top: 0;
@@ -41,6 +62,9 @@ header img {
     z-index: 1000;
 }
 
+/* ==========================
+   Heading Styles
+   ========================== */
 h1 {
     font-weight: 800;
     color: #3e5596;
@@ -57,7 +81,25 @@ h1 {
     display: none;
 }
 
-/* Buttons Styling */
+/* ==========================
+   Layout Styles
+   ========================== */
+.buttons-container {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin: 0 10px;
+}
+
+.right-aligned {
+    margin-left: auto; /* Pushes this button to the right */
+}
+
+/* ==========================
+   Button Styles
+   ========================== */
 button {
     font-family: 'Open Sans', sans-serif;
     background-color: #3e5596;
@@ -66,7 +108,6 @@ button {
     font-size: 16px;
     border: none;
     border-radius: 5px;
-    margin: 10px;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
@@ -83,27 +124,11 @@ button:hover {
 #connectButton {
     background-color: red;
     color: white;
-    transition: background-color 0.3s ease;
 }
-
-#bufferSize {
-    font-family: 'Open Sans', sans-serif;
-    font-size: 16px;
-    padding: 10px 20px;
-    border: 1px solid #3e5596;
-    border-radius: 5px;
-    text-align: center;
-}
-#bufferSize:focus {
-    outline: none;
-    border-color: #4b76ce;
-    box-shadow: 0 0 5px rgba(75, 118, 206, 0.5);
-}
-
 
 .modebar-btn {
-    font-size: 24px;  /* Increase button font size */
-    padding: 10px;     /* Adjust padding around buttons */
+    font-size: 24px; /* Increase button font size */
+    padding: 10px;    /* Adjust padding around buttons */
     color: #26488c;
 }
 
@@ -112,7 +137,9 @@ button:hover {
     background-color: #4b76ce;
 }
 
-/* Plot Styling */
+/* ==========================
+   Plot Styling
+   ========================== */
 #plot {
     flex-grow: 1;
     width: 100%;
@@ -121,65 +148,18 @@ button:hover {
     margin-bottom: 20px;
 }
 
-/* Layout Styling */
-.buttons-container {
-    display: flex;
-    justify-content: left;
-    flex-wrap: wrap;
-    align-items: center;
-}
-
-.right-aligned {
-    margin-left: auto; /* Pushes this button to the right */
-}
-
-footer {
-    background-color: #1F1F1F;
-    color: #777777;
-    padding: 20px;
-    display: flex;
-    justify-content: space-between; /* Align left and right */
-    align-items: center;
-    position: relative;
-    width: 100%;
-    box-sizing: border-box;
-}
-
-.footer-left {
-    font-size: 14px;
-}
-
-.footer-right {
-    font-size: 18px;
-}
-
-/* Social Media Icons */
-.footer-right a {
-    color: #777777;
-    margin: 0 10px;
-    text-decoration: none;
-}
-
-.footer-right a:hover {
-    color: white;  /* Green color on hover */
-}
-
-/* Styling for social media icons */
-.footer-right i {
-    font-size: 20px;
-}
-
-/* General Dropdown Styling */
+/* ==========================
+   Dropdown Styles
+   ========================== */
 select {
     font-family: 'Open Sans', sans-serif;
     font-size: 16px;
-    padding: 10px 20px;
+    padding: 8px 18px;
     border: 1px solid #3e5596;
     border-radius: 5px;
     background-color: white;
     color: #3e5596;
     cursor: pointer;
-    margin: 10px;
     transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
@@ -195,7 +175,9 @@ select:hover {
     background-color: #eaf1fc;
 }
 
-/* Modal Styles */
+/* ==========================
+   Modal Styles
+   ========================== */
 .modal {
     display: none; /* Hidden by default */
     position: fixed;
@@ -236,10 +218,12 @@ h2 {
     margin-bottom: 20px;
 }
 
-/* Product Grid Styles */
+/* ==========================
+   Product Grid Styles
+   ========================== */
 .product-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
     gap: 20px;
 }
 
@@ -260,6 +244,7 @@ h2 {
 .product-tile h3 {
     margin: 10px 0;
     color: #3e5596;
+    font-size: 18px;
 }
 
 .product-tile p {
@@ -278,7 +263,7 @@ h2 {
 }
 
 .product-tile:hover {
-    transform: scale(1.05);
+    transform: scale(1.15);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
@@ -286,8 +271,65 @@ h2 {
     background-color: #4b76ce;
 }
 
-/* Styling for the active product tile */
 .product-tile.active {
-    outline: 3px solid #3e5596; /* Adds a blue outline */
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Slightly more pronounced shadow for the active tile */
+    outline: 3px solid #3e5596; /* Blue outline for active tiles */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Pronounced shadow for active tile */
+}
+
+/* ==========================
+   Clear Selection Button
+   ========================== */
+.clear-selection-btn {
+    background-color: #ff6f61;  /* Red to indicate clear action */
+    color: white;
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 20px;
+}
+
+.clear-selection-btn:hover {
+    background-color: #e45a48; /* Darker red on hover */
+}
+
+/* ==========================
+   Footer Styles
+   ========================== */
+footer {
+    background-color: #1F1F1F;
+    color: #777777;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.footer-left {
+    font-size: 14px;
+}
+
+.footer-right {
+    font-size: 18px;
+}
+
+/* ==========================
+   Social Media Icons Styles
+   ========================== */
+.footer-right a {
+    color: #777777;
+    margin: 0 10px;
+    text-decoration: none;
+}
+
+.footer-right a:hover {
+    color: white;  /* Change color on hover */
+}
+
+.footer-right i {
+    font-size: 20px;
 }
