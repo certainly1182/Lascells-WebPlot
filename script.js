@@ -7,6 +7,25 @@ let scalingFactor = 1;
 const timeData = [];  // Stores time data for x-axis
 const valueData = []; // Stores sensor data for y-axis
 
+// DOM Element References
+const connectButton = document.getElementById('connectButton');
+const startLoggingButton = document.getElementById('startLoggingButton');
+const stopLoggingButton = document.getElementById('stopLoggingButton');
+const resetButton = document.getElementById('resetButton');
+const saveButton = document.getElementById('saveButton');
+const savePlotButton = document.getElementById('savePlotButton');
+const autoScaleButton = document.getElementById('autoScaleButton');
+const zoomButton = document.getElementById('zoomButton');
+const samplingPeriodSelect = document.getElementById('samplingPeriod');
+const voltageRangeSelect = document.getElementById('voltageRange');
+const clearSelectionButton = document.getElementById('clearSelectionButton');
+const currentProductDisplay = document.getElementById('currentProduct');
+const selectProductButton = document.getElementById("selectProductButton");
+const productMenu = document.getElementById("productMenu");
+const closeProductMenu = document.getElementById("closeProductMenu");
+const notSupported = document.getElementById('notSupported');
+const plotDiv = document.getElementById('plot');
+
 // Set up the streaming trace for Plotly
 const trace = {
     x: [],
@@ -60,15 +79,9 @@ const config = {
 
 // Hide unsupported browser version message if WebSerial is supported
 document.addEventListener('DOMContentLoaded', () => {
-    const notSupported = document.getElementById('notSupported');
-
     if (!('serial' in navigator)) {
         notSupported.style.display = 'block'; // Show the box
     }
-
-    const selectProductButton = document.getElementById("selectProductButton");
-    const productMenu = document.getElementById("productMenu");
-    const closeProductMenu = document.getElementById("closeProductMenu");
 
     // Open modal
     selectProductButton.addEventListener("click", () => {
@@ -110,7 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Get the name of the selected product
             const productName = tile.querySelector('h3').textContent;
             // Update the current product display
-            document.getElementById('currentProduct').textContent = `Logging: ${productName}`;
+            currentProductDisplay.textContent = `Logging: ${productName}`;
 
             console.log(`Selected product with unit: ${unit}, scale: ${scale}`);
         });
@@ -121,8 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
 Plotly.newPlot('plot', [trace], layout, config);
 
 // Connect to the serial port when the connect button is clicked
-document.getElementById('connectButton').addEventListener('click', async () => {
-    const connectButton = document.getElementById('connectButton');
+connectButton.addEventListener('click', async () => {
     try {
         // Request a serial port and open it
         port = await navigator.serial.requestPort();
@@ -133,57 +145,29 @@ document.getElementById('connectButton').addEventListener('click', async () => {
         connectButton.disabled = true;
 
         // Enable logging controls
-        document.getElementById('startLoggingButton').disabled = false;
+        startLoggingButton.disabled = false;
 
         console.log('Serial port connected.');
 
-        // Start monitoring the connection
-        monitorPortConnection();
     } catch (error) {
         console.error('Error connecting to the serial port:', error);
         alert('Failed to connect to the serial port. Please try again.');
     }
 });
 
-// Periodically monitor the port connection status
-function monitorPortConnection() {
-    // Run monitoring every 5 seconds
-    const monitoringInterval = setInterval(() => {
-        if (port && port.readable && port.writable) {
-            console.log('Port is still connected.');
-        } else {
-            console.log('Port disconnected.');
-            clearInterval(monitoringInterval); // Stop further checks
-            handleDisconnect(); // Handle the disconnection
-        }
-    }, 5000); // Check every 5 seconds
-}
-
-// Handle port disconnection
-function handleDisconnect() {
-    const connectButton = document.getElementById('connectButton');
-    connectButton.style.backgroundColor = 'red';
-    connectButton.disabled = false;
-
-    document.getElementById('startLoggingButton').disabled = true;
-    document.getElementById('stopLoggingButton').disabled = true;
-
-    console.log('Serial port disconnected.');
-}
-
 // Start logging data when the "Start Logging" button is clicked
-document.getElementById('startLoggingButton').addEventListener('click', async () => {
+startLoggingButton.addEventListener('click', async () => {
     // Clear previous data and initialize start time
     startTime = Date.now();
     isLogging = true;
     
     // Disable the dropdown menus
-    document.getElementById('samplingPeriod').disabled = true;
-    document.getElementById('voltageRange').disabled = true;
+    samplingPeriodSelect.disabled = true;
+    voltageRangeSelect.disabled = true;
     
     // Get the selected values from the dropdowns
-    const samplingPeriod = document.getElementById('samplingPeriod').value;
-    const voltageRange = document.getElementById('voltageRange').value;
+    const samplingPeriod = samplingPeriodSelect.value;
+    const voltageRange = voltageRangeSelect.value;
     
     // Map the dropdown values to corresponding UART codes
     const samplingCode = {
@@ -214,8 +198,8 @@ document.getElementById('startLoggingButton').addEventListener('click', async ()
     }
 
     // Disable the start button and enable stop button
-    document.getElementById('startLoggingButton').disabled = true;
-    document.getElementById('stopLoggingButton').disabled = false;
+    startLoggingButton.disabled = true;
+    stopLoggingButton.disabled = false;
 
     // If the port is connected and data is not already being read, start reading
     if (port && !readerStream) {
@@ -225,12 +209,12 @@ document.getElementById('startLoggingButton').addEventListener('click', async ()
 });
 
 // Stop logging when the "Stop Logging" button is clicked
-document.getElementById('stopLoggingButton').addEventListener('click', () => {
+stopLoggingButton.addEventListener('click', () => {
     isLogging = false;
     // Disable both start and stop buttons after stopping
-    document.getElementById('startLoggingButton').disabled = true;
-    document.getElementById('stopLoggingButton').disabled = true;
-    document.getElementById('resetButton').disabled = false;
+    startLoggingButton.disabled = true;
+    stopLoggingButton.disabled = true;
+    resetButton.disabled = false;
 });
 
 async function readSerialData(readerStream) {
@@ -282,7 +266,7 @@ async function readSerialData(readerStream) {
 }
 
 // Reset data when the "Reset Data" button is clicked
-document.getElementById('resetButton').addEventListener('click', () => {
+resetButton.addEventListener('click', () => {
     // Clear the timeData and valueData arrays
     timeData.length = 0;
     valueData.length = 0;
@@ -306,14 +290,14 @@ document.getElementById('resetButton').addEventListener('click', () => {
     Plotly.newPlot('plot', [newTrace], layout, config);
 
     // Enable the start logging button again
-    document.getElementById('startLoggingButton').disabled = false;
+    startLoggingButton.disabled = false;
     // Enable the dropdown menus
-    document.getElementById('samplingPeriod').disabled = false;
-    document.getElementById('voltageRange').disabled = false;
+    samplingPeriodSelect.disabled = false;
+    voltageRangeSelect.disabled = false;
 });
 
 // Save data as CSV when the "Save Data as CSV" button is clicked
-document.getElementById('saveButton').addEventListener('click', () => {
+saveButton.addEventListener('click', () => {
     // Create CSV string from timeData and valueData arrays
     const csvContent = "Time (s),Voltage\n" + timeData.map((t, i) => `${t},${valueData[i]}`).join("\n");
     // Create a Blob object with the CSV content
@@ -327,7 +311,7 @@ document.getElementById('saveButton').addEventListener('click', () => {
 });
 
 // Function to save the plot as a PNG image
-document.getElementById('savePlotButton').addEventListener('click', function() {
+savePlotButton.addEventListener('click', function() {
     var plotDiv = document.getElementById('plot');
     Plotly.downloadImage(plotDiv, {
         format: 'png',
@@ -338,7 +322,7 @@ document.getElementById('savePlotButton').addEventListener('click', function() {
 });
 
 // Function to auto-scale the plot
-document.getElementById('autoScaleButton').addEventListener('click', function() {
+autoScaleButton.addEventListener('click', function() {
     var plotDiv = document.getElementById('plot');
 
     var currentLayout = plotDiv.layout;
@@ -356,7 +340,7 @@ document.getElementById('autoScaleButton').addEventListener('click', function() 
     });
 });
 
-document.getElementById('zoomButton').addEventListener('click', function() {
+zoomButton.addEventListener('click', function() {
     const plotDiv = document.getElementById('plot');
     
     // Trigger Plotly's modebar zoom mode
@@ -385,7 +369,7 @@ function updateYAxisTitle(unit) {
 }
 
 // Handle Clear Selection button
-document.getElementById('clearSelectionButton').addEventListener('click', function() {
+clearSelectionButton.addEventListener('click', function() {
     // Remove the 'active' class from any selected product tile
     const activeProductTiles = document.querySelectorAll('.product-tile.active');
     activeProductTiles.forEach(tile => {
@@ -399,7 +383,7 @@ document.getElementById('clearSelectionButton').addEventListener('click', functi
     scalingFactor = 1;
     
     // Update the current product display
-    document.getElementById('currentProduct').textContent = `No product selected`;
+    currentProductDisplay.textContent = `No product selected`;
     
     console.log(`Cleared product selection`);
 });
