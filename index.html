@@ -1,88 +1,13 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <title>Lascells Datalogger</title>
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script>
-        // Redirect to HTTPS if HTTP is requested.
-        if (window.location.protocol === 'http:') {
-          window.location.href = 'https:' + window.location.href.substring(5);
-        }
-    </script>
-
-    <script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=1">
-</head>
-    
-<body>
-    <header>
-        <img src="lascells_Logo_Blue.png" alt="Logo">
-    </header>
-
-    <h1>Datalogger</h1>
-    <div id="notSupported">
-        Sorry, <b>Web Serial</b> is not supported on this device, make sure you're
-        running Chrome/Edge 89 or later.
-    </div>
-    <!-- Container for buttons -->
-    <div class="buttons-container">
-        <button id="connectButton" title="Connect to the serial port">
-            <i class="fas fa-plug"></i>
-        </button>
-        <button id="resetButton" disabled title="Reset the data">
-            <i class="fas fa-trash"></i>
-        </button>
-        <button id="startLoggingButton" disabled title="Start logging the data">
-            <i class="fas fa-play"></i>
-        </button>
-        <button id="stopLoggingButton" disabled title="Stop logging the data">
-            <i class="fas fa-stop"></i>
-        </button>
-        <label for="bufferSize" style="margin-right: 10px;">Buffer Size:</label>
-        <input
-            type="number"
-            id="bufferSize"
-            name="bufferSize"
-            min="10"
-            max="1000"
-            step="10"
-            value="100"
-            style="width: 80px;"
-            title="Enter or select buffer size (10 - 1000)"
-        >
-        <button id="saveButton" title="Save data as a CSV file" class="right-aligned">
-            <i class="fas fa-download"></i>
-        </button>
-        <button id="savePlotButton" title="Save plot as PNG">
-            <i class="fas fa-image"></i>
-        </button>
-        <button id="autoScaleButton" title="Auto-scale plot">
-            <i class="fas fa-expand"></i>
-        </button>
-    </div>
-    <!-- Div where the plot will be rendered -->
-    <div id="plot"></div>
-    
-    <footer>
-        <!-- Left side: Copyright text -->
-        <div class="footer-left">
-            &copy; 2024 Lascells Ltd. All Rights Reserved Lascells Ltd.
-        </div>
-        <!-- Right side: Social Media Icons -->
-        <div class="footer-right">
-            <a href="https://x.com/lascells" target="_blank"><i class="fab fa-twitter"></i></a>
-            <a href="https://www.facebook.com/Lascells/" target="_blank"><i class="fab fa-facebook"></i></a>
-            <a href="https://www.youtube.com/@LascellsScience" target="_blank"><i class="fab fa-youtube"></i></a>
-            <a href="https://www.instagram.com/lascellsscience/" target="_blank"><i class="fab fa-instagram"></i></a>
-        </div>
-    </footer>
-    
-    <!-- Link to the external JavaScript file -->
-    <script src="script.js?v=1"></script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="logo.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WebPlot</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
 </html>
