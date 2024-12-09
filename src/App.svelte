@@ -4,10 +4,13 @@
   
   import Header from './lib/Header.svelte'
   import Chart from './lib/Chart.svelte'
+  import Footer from './lib/Footer.svelte'
 
   let pointsOptions = [10, 20, 50, 100, 500, 1000, 5000, 10000, 50000, 100000]
   let defaultPoints = pointsOptions[2]
   let numPoints
+
+  let periodOptions = ['1 ms', '2 ms', '5 ms', '10 ms', '25 ms', '50 ms', '100 ms', '200 ms', '500 ms', '1 s', '2 s', '5 s', '10 s', '15 s', '30 s']
 
   let connected = false
   let started = false
@@ -55,6 +58,10 @@
     <Chart bind:numPoints/>
   {/if}
 </main>
+
+<Footer
+
+/>
 
 <style>
   #logo {

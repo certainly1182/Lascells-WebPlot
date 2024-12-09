@@ -11,9 +11,14 @@
     export let numPoints
     export let defaultPoints
 
+    export let periodOptions
+    export let period
+    export let defaultPeriod
+
     const dispatch = createEventDispatcher()
 
     $: startButtonText = !started ? 'Start' : 'Stop'
+    $: startButtonColour = !started ? 'green' : 'red'
     function onStart () {
       dispatch('start')
     }
@@ -34,6 +39,12 @@
   <img src="logo.svg" id="logo" alt="logo">
 
   <div id="container-right">
+    <SelectMenu
+      tooltip="Sampling Period"
+      bind:selectedOption={numPoints}
+      options={pointsOptions}
+      defaultOption={defaultPoints}
+    />
 
     <SelectMenu
       tooltip="Points"
@@ -44,8 +55,8 @@
 
     {#if connected}
       <Button bind:name={startButtonText}
-            --background-color="var(--secondary)"
-            --color="var(--on-secondary)"
+            --background-color={startButtonColour}
+            --color=white
             on:click={onStart}
       />
     {/if}
@@ -55,11 +66,6 @@
       --color="var(--on-primary)"
       on:click={onConnect}
     />
-
-    <Dropdown>
-      <a href="https://github.com/dot1nt/webplot">Github</a>
-      <a href="/">About</a>
-    </Dropdown>
   </div>
 </div>
 
@@ -77,7 +83,7 @@
   }
 
   #logo {
-    width: 50px;
+    width: 200px;
   }
 
   #container-right {

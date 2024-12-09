@@ -65,7 +65,7 @@
     const seriesOpts = [{}];
 
     for (let i = 0; i < maxLines; i++) {
-      const color = getRandomColor();
+      const color = "#26488b";
 
       seriesOpts.push({
         label: `Line ${i+1}`,
@@ -91,26 +91,26 @@
           label: "Time",
           width: 1,
           space: 300,
-          stroke: '#fff',
+          stroke: '#000',
           ticks: {
             width: 0.2,
-            stroke: '#fff',
+            stroke: '#000',
           },
           grid: {
             width: 0.2,
-            stroke: '#fff',
+            stroke: '#000',
           },
         },
         {
           label: "Voltage (V)",
-          stroke: '#fff',
+          stroke: '#000',
           ticks: {
             width: 0.2,
-            stroke: '#fff',
+            stroke: '#000',
           },
           grid: {
             width: 0.2,
-            stroke: '#fff',
+            stroke: '#000',
           },
         },
       ],
@@ -124,7 +124,7 @@
         show: false,
       },
       font: {
-        color: '#fff',
+        color: '#000',
       },
       series: seriesOpts,
       hooks: {
@@ -249,7 +249,8 @@
 
   #chart-container {
     position: fixed;
-    bottom: 0;
     z-index: -1;
+    height: (calc 100%- 60px);
+    bottom: 60px;
   }
 </style>
