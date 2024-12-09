@@ -1,9 +1,10 @@
+<!-- lib/Chart.svelte -->
+
 <script>
   import { onMount } from 'svelte';
   import { serialLineStore } from '../js/store';
-  import { getRandomColor } from '../js/utils';
-
   import uPlot from 'uplot';
+  import ChartControls from './ChartControls.svelte';
 
   let chart;
 
@@ -13,7 +14,9 @@
   const chartData = Array.from({ length: maxLines + 1 }, () => []);
 
   let chartContainer;
-
+  let isYAxisAutoScale = true;
+  let manualYScale = { min: null, max: null };
+  
   function addChartData(data) {
     for (let i = 0; i < data.length; i++) {
       chartData[i].push(data[i]);
@@ -57,6 +60,16 @@
     addChartData(data);
 
     chart.setData(chartData);
+
+    // If autoscale is off, maintain manual scale
+    if (!isYAxisAutoScale && chart) {
+      chart.batch(() => {
+        chart.setScale('y', { 
+          min: manualYScale.min, 
+          max: manualYScale.max 
+        });
+      });
+    }
   }
 
   $: $serialLineStore, updateChart();
@@ -81,7 +94,7 @@
           time: true,
         },
         y: {
-          auto: true,
+          auto: isYAxisAutoScale,
         },
       },
       axes: [
@@ -135,8 +148,45 @@
     return new uPlot(opts, chartData, chartContainer);
   }
 
+  function toggleYAxisAutoScale(event) {
+    isYAxisAutoScale = event.detail;
+    
+    if (chart) {
+      if (isYAxisAutoScale) {
+        // Reset to autoscale
+        chart.batch(() => {
+          chart.setScale('y', { auto: true });
+        });
+      } else {
+        // Capture current scale when turning off autoscale
+        manualYScale = {
+          min: chart.scales.y.min,
+          max: chart.scales.y.max
+        };
+        
+        chart.batch(() => {
+          chart.setScale('y', { 
+            min: manualYScale.min, 
+            max: manualYScale.max 
+          });
+        });
+      }
+    }
+  }
+
+  function updateYScaleFromInput() {
+    if (manualYScale.min !== null && manualYScale.max !== null) {
+      chart.batch(() => {
+        chart.setScale('y', {
+          min: manualYScale.min,
+          max: manualYScale.max,
+        });
+      });
+    }
+  }
+
   function zoomWheelPlugin(u) {
-    let factor = 0.9; // Zoom factor
+    let factor = 0.9;
     let over = u.over;
     let rect = over.getBoundingClientRect();
 
@@ -158,7 +208,6 @@
       return [nMin, nMax];
     }
 
-    // Zoom logic (same as your existing zoom)
     function zoom(e) {
       e.preventDefault();
 
@@ -177,12 +226,11 @@
       }
     }
 
-    // Panning logic
     function startPan(e) {
       isDragging = true;
       lastPosX = e.clientX;
       lastPosY = e.clientY;
-      rect = over.getBoundingClientRect(); // Update bounds
+      rect = over.getBoundingClientRect();
     }
 
     function doPan(e) {
@@ -205,7 +253,14 @@
 
       u.batch(() => {
         u.setScale('x', { min: nxMin, max: nxMax });
-        u.setScale('y', { min: nyMin, max: nyMax });
+        
+        // Only update y-scale if autoscale is off
+        if (!isYAxisAutoScale) {
+          u.setScale('y', { min: nyMin, max: nyMax });
+          
+          // Store manual scale for persistence
+          manualYScale = { min: nyMin, max: nyMax };
+        }
       });
 
       lastPosX = e.clientX;
@@ -243,6 +298,18 @@
 </script>
 
 <div id="chart-container" bind:this={chartContainer} />
+<ChartControls 
+  bind:isYAxisAutoScale
+  on:toggleAutoscale={toggleYAxisAutoScale}
+/>
+
+<div class="y-axis-input-top">
+  <input type="number" alt="Maximum Y-Value" bind:value={manualYScale.max} on:input={updateYScaleFromInput} />
+</div>
+
+<div class="y-axis-input-bottom">
+  <input type="number" alt="Minimum Y-Value" bind:value={manualYScale.min} on:input={updateYScaleFromInput} />
+</div>
 
 <style>
   @import "../../node_modules/uplot/dist/uPlot.min.css";
@@ -250,7 +317,30 @@
   #chart-container {
     position: fixed;
     z-index: -1;
-    height: (calc 100%- 60px);
-    bottom: 60px;
+    height: (calc 100%- 60px - 60px);
+    bottom: 52px;
+  }
+
+  .y-axis-input-top {
+    position: absolute;
+    top: 60px;
+    left: 3px;
+    z-index: 15;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .y-axis-input-bottom {
+    position: absolute;
+    align-items: center;
+    bottom: 120px;
+    left: 3px;
+    z-index: 15;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .y-axis-input-top input,.y-axis-input-bottom input {
+    width: 58px;
   }
 </style>

@@ -17,6 +17,7 @@
     font-size: 16px;
     font-weight: 600;
     transition: 0.3s;
+    height: 40px;
   }
 
   button:hover {

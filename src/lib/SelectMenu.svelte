@@ -50,7 +50,7 @@
     border: 2px solid var(--tertiary);
     border-radius: 20px 0 0 20px;
     outline: none;
-    width: 100px;
+    width: 120px;
     height: 40px;
     cursor: default;
     line-height: 45px;
@@ -93,6 +93,7 @@
     padding: 14px 120px 14px 20px;
     text-align: left;
     transition: 0.2s;
+    white-space: nowrap;
   }
 
   .menu-options button:hover {
