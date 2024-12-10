@@ -20,8 +20,6 @@
   export let voltageString
   export let defaultVoltage
 
-  let samplingPeriod_s
-
   const dispatch = createEventDispatcher()
 
   $: startButtonText = !started ? 'Start' : 'Stop'
@@ -132,24 +130,23 @@
 
 <style>
   #header {
-    display: flex;
-    position: fixed;
-    top: 0;
     background-color: var(--background-secondary);
+    gap: 20px;
+
+    height: 4rem; /* Fixed footer height */
+    padding: 1rem;
+    display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 100%;
-    padding: 10px 20px 10px 40px;
-    gap: 20px;
   }
 
   #logo {
-    width: 200px;
+    height: 3rem;
   }
 
   #container-right {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 1rem;
   }
 </style>

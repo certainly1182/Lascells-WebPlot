@@ -4,12 +4,10 @@
   
 <style>
     footer {
+      height: 4rem; /* Fixed footer height */
+      padding: 1rem;
       background-color: #333;
-      color: #ffffff;
-      padding: 1rem 2rem;
-      position: fixed;
-      bottom: 0;
-      width: 100%;
+      color: white;
       display: flex;
       justify-content: center;
       align-items: center;

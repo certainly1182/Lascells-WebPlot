@@ -56,63 +56,51 @@
   }
 </script>
 
-<Header
-  bind:connected
-  bind:started
+<div id="app">
+  <Header
+    bind:connected
+    bind:started
 
-  bind:numPoints
-  pointsOptions={pointsOptions}
-  bind:defaultPoints
+    bind:numPoints
+    pointsOptions={pointsOptions}
+    bind:defaultPoints
 
-  bind:periodString
-  periodOptions={periodOptions}
-  bind:defaultPeriod
+    bind:periodString
+    periodOptions={periodOptions}
+    bind:defaultPeriod
 
-  bind:voltageString
-  voltageOptions={voltageOptions}
-  bind:defaultVoltage
+    bind:voltageString
+    voltageOptions={voltageOptions}
+    bind:defaultVoltage
 
-  on:start={onStart}
-  on:connect={onConnect}
-/>
+    on:start={onStart}
+    on:connect={onConnect}
+  />
 
-<main>
-  <Chart bind:numPoints bind:this={chartRef}/>
-</main>
+  <main>
+    <Chart bind:numPoints bind:this={chartRef}/>
+  </main>
 
-<Footer
+  <Footer
 
-/>
+  />
+</div>
 
 <style>
-  #under-construction {
-    position: fixed;
-    width: 100%;
-    text-align: center;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 4rem;
-    font-weight: bold;
-    color: var(--primary); /* Replace with a desired color or variable */
-    animation: colorChange 2s linear infinite; /* Optional for animated effect */
+  #app {
+    display: flex;
+    flex-direction: column;
+    height: 100vh; /* Full viewport height */
+    overflow: hidden; /* Prevent scrolling */
   }
-
-  @keyframes colorChange {
-    0% {
-      color: #ff0000; /* Red */
-    }
-    25% {
-      color: #ff00ff; /* Magenta */
-    }
-    50% {
-      color: #0000ff; /* Blue */
-    }
-    75% {
-      color: #00ffff; /* Cyan */
-    }
-    100% {
-      color: #ff0000; /* Back to Red */
-    }
+  
+  main {
+    flex-grow: 1; /* Allow main to take up available space */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 0;
   }
 </style>

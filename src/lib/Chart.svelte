@@ -6,6 +6,7 @@
   import uPlot from 'uplot';
   import ChartControls from './ChartControls.svelte';
   import { createSineWaveData } from '../js/utils';
+  import YAxisTriangleControl from './YAxisTriangleControl.svelte';
 
   let chart;
 
@@ -274,9 +275,10 @@
   }
 
   function getSize() {
+    const remInPixels = parseFloat(getComputedStyle(document.documentElement).fontSize);
     return {
-      width: window.innerWidth - 20,
-      height: window.innerHeight - 70,
+      width: window.innerWidth,
+      height: window.innerHeight - (9 * remInPixels),
     };
   }
 
@@ -291,35 +293,65 @@
 
     chart.setData(chartData)
   });
+
+  function handleMaxChange(event) {
+    manualYScale.max = event.detail;
+    updateYScale();
+  }
+
+  function handleMinChange(event) {
+    manualYScale.min = event.detail;
+    updateYScale();
+  }
+
+  function updateYScale() {
+    if (chart && manualYScale.min !== null && manualYScale.max !== null) {
+      chart.batch(() => {
+        chart.setScale('y', {
+          min: manualYScale.min,
+          max: manualYScale.max,
+        });
+      });
+    }
+  }
+
 </script>
 
-<div id="chart-container" bind:this={chartContainer} />
-<ChartControls 
-  on:autoscale={autoscaleYAxis}
-/>
-
-<div class="y-axis-input-top">
-  <input type="number" alt="Maximum Y-Value" bind:value={manualYScale.max} on:input={updateYScaleFromInput} />
-</div>
-
-<div class="y-axis-input-bottom">
-  <input type="number" alt="Minimum Y-Value" bind:value={manualYScale.min} on:input={updateYScaleFromInput} />
+<div id="chart-container" bind:this={chartContainer}>
+  <ChartControls 
+    on:autoscale={autoscaleYAxis}
+  />
+  <YAxisTriangleControl 
+    type="max"
+    bind:value={manualYScale.max}
+    top={0}
+    left={0}
+    on:valueChange={handleMaxChange}
+  />
+  <YAxisTriangleControl 
+    type="min"
+    bind:value={manualYScale.min}
+    top={100}
+    left={0}
+    on:valueChange={handleMinChange}
+  />
 </div>
 
 <style>
   @import "../../node_modules/uplot/dist/uPlot.min.css";
 
   #chart-container {
-    position: fixed;
-    z-index: -1;
-    height: (calc 100%- 60px - 60px);
-    bottom: 52px;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    padding-top: 1rem;
   }
 
   .y-axis-input-top {
     position: absolute;
-    top: 60px;
-    left: 3px;
+    top: 0;
+    left: 0;
     z-index: 15;
     display: flex;
     flex-direction: column;
@@ -327,15 +359,15 @@
 
   .y-axis-input-bottom {
     position: absolute;
-    align-items: center;
-    bottom: 120px;
-    left: 3px;
+    bottom: 0;
+    left: 0;
     z-index: 15;
     display: flex;
     flex-direction: column;
   }
 
-  .y-axis-input-top input,.y-axis-input-bottom input {
+  .y-axis-input-top input,
+  .y-axis-input-bottom input {
     width: 58px;
   }
 </style>

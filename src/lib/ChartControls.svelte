@@ -22,19 +22,19 @@
   <style>
     .chart-controls {
       position: fixed;
-      bottom: 60px;
-      right: 10px;
-      padding: 5px 10px;
+      bottom: 4rem;
+      right: 0.5rem;
+      padding: 0.5rem;
       z-index: 10;
     }
   
     .autoscale-button {
-        padding: 0px 10px;
-        height: 30px;
+        padding: .5rem;
+        height: 2rem;
         background-color: #26488b;
         color: white;
         border: none;
-        border-radius: 30px;
+        border-radius: 2rem;
         cursor: pointer;
         transition: background-color 0.3s ease;
     }
