@@ -9,7 +9,7 @@
   import Footer from './lib/Footer.svelte'
 
   let pointsOptions = [10, 20, 50, 100, 500, 1000, 5000, 10000]
-  let defaultPoints = pointsOptions[2]
+  let defaultPoints = pointsOptions[5]
   let numPoints
 
   let periodOptions = ["1ms", "2ms", "5ms", "10ms", "25ms", "50ms", "100ms", "200ms", "500ms", "1s", "2s", "5s", "10s", "15s", "30s", "1min"]
@@ -22,6 +22,12 @@
 
   let connected = false
   let started = false
+
+  let chartRef;
+
+  function clearChart() {
+    chartRef.clearChartData();
+  }
 
   async function connect () {
     await serialConnect(115200)
@@ -36,7 +42,12 @@
   }
 
   function onStart () {
-    !started ? serialStart() : serialStop()
+    if (!started) {
+      clearChart();
+      serialStart();
+    } else {
+      serialStop();
+    }
     started = !started
   }
 
@@ -66,15 +77,7 @@
 />
 
 <main>
-  {#if !connected}
-    <div id="under-construction">
-      UNDER CONSTRUCTION
-    </div>
-  {/if}
-
-  {#if connected}
-    <Chart bind:numPoints/>
-  {/if}
+  <Chart bind:numPoints bind:this={chartRef}/>
 </main>
 
 <Footer

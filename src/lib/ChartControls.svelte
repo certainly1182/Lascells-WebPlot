@@ -2,26 +2,21 @@
 
 <script>
     import { createEventDispatcher } from 'svelte';
-  
-    export let isYAxisAutoScale = true;
     
     const dispatch = createEventDispatcher();
   
-    function handleAutoScaleToggle() {
-      isYAxisAutoScale = !isYAxisAutoScale;
-      dispatch('toggleAutoscale', isYAxisAutoScale);
+    function handleAutoscale() {
+      dispatch('autoscale');
     }
   </script>
   
   <div class="chart-controls">
-    <label class="autoscale-toggle">
-      <input 
-        type="checkbox" 
-        checked={isYAxisAutoScale}
-        on:change={handleAutoScaleToggle}
-      />
-      Y-Axis Autoscale
-    </label>
+    <button 
+        class="autoscale-button"
+        on:click={handleAutoscale}
+    >
+        Autoscale Y-Axis
+    </button>
   </div>
   
   <style>
@@ -33,9 +28,18 @@
       z-index: 10;
     }
   
-    .autoscale-toggle {
-      display: flex;
-      align-items: center;
-      gap: 5px;
+    .autoscale-button {
+        padding: 0px 10px;
+        height: 30px;
+        background-color: #26488b;
+        color: white;
+        border: none;
+        border-radius: 30px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .autoscale-button:hover {
+        background-color: #1e3a6d;
     }
   </style>

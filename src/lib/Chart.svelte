@@ -5,6 +5,7 @@
   import { serialLineStore } from '../js/store';
   import uPlot from 'uplot';
   import ChartControls from './ChartControls.svelte';
+  import { createSineWaveData } from '../js/utils';
 
   let chart;
 
@@ -12,11 +13,20 @@
   const maxLines = 30;
 
   const chartData = Array.from({ length: maxLines + 1 }, () => []);
-
-  let chartContainer;
-  let isYAxisAutoScale = true;
-  let manualYScale = { min: null, max: null };
   
+  let chartContainer;
+  let manualYScale = { min: null, max: null };
+
+  export function clearChartData() {
+    serialLineStore.set("");
+    
+    chartData.forEach((line, index) => {
+      chartData[index] = [];
+    });
+
+    chart.setData(chartData);
+  }
+
   function addChartData(data) {
     for (let i = 0; i < data.length; i++) {
       chartData[i].push(data[i]);
@@ -61,15 +71,12 @@
 
     chart.setData(chartData);
 
-    // If autoscale is off, maintain manual scale
-    if (!isYAxisAutoScale && chart) {
-      chart.batch(() => {
-        chart.setScale('y', { 
-          min: manualYScale.min, 
-          max: manualYScale.max 
-        });
+    chart.batch(() => {
+      chart.setScale('y', { 
+        min: manualYScale.min, 
+        max: manualYScale.max 
       });
-    }
+    });
   }
 
   $: $serialLineStore, updateChart();
@@ -91,19 +98,18 @@
       pxAlign: false,
       scales: {
         x: {
-          time: true,
+          time: false,
         },
         y: {
-          auto: isYAxisAutoScale,
+          auto: true,
         },
       },
       axes: [
         {
           scale: 'x',
           show: true,
-          label: "Time",
+          label: "Time (s)",
           width: 1,
-          space: 300,
           stroke: '#000',
           ticks: {
             width: 0.2,
@@ -145,32 +151,24 @@
       },
     };
 
+    const numInitialPoints = numPoints || 100;
+    const initialSineData = createSineWaveData(numInitialPoints);
+    chartData[0] = initialSineData[0];
+    chartData[1] = initialSineData[1];
+
     return new uPlot(opts, chartData, chartContainer);
   }
 
-  function toggleYAxisAutoScale(event) {
-    isYAxisAutoScale = event.detail;
-    
+  function autoscaleYAxis() {
     if (chart) {
-      if (isYAxisAutoScale) {
-        // Reset to autoscale
-        chart.batch(() => {
-          chart.setScale('y', { auto: true });
-        });
-      } else {
-        // Capture current scale when turning off autoscale
-        manualYScale = {
-          min: chart.scales.y.min,
-          max: chart.scales.y.max
-        };
-        
-        chart.batch(() => {
-          chart.setScale('y', { 
-            min: manualYScale.min, 
-            max: manualYScale.max 
-          });
-        });
-      }
+      // Perform one-time autoscale
+      chart.batch(() => {
+        chart.setScale('y', { auto: true });
+      });
+      manualYScale = {
+        min: chart.scales.y.min,
+        max: chart.scales.y.max
+      };
     }
   }
 
@@ -254,13 +252,9 @@
       u.batch(() => {
         u.setScale('x', { min: nxMin, max: nxMax });
         
-        // Only update y-scale if autoscale is off
-        if (!isYAxisAutoScale) {
-          u.setScale('y', { min: nyMin, max: nyMax });
-          
-          // Store manual scale for persistence
-          manualYScale = { min: nyMin, max: nyMax };
-        }
+        u.setScale('y', { min: nyMin, max: nyMax });
+        
+        manualYScale = { min: nyMin, max: nyMax };
       });
 
       lastPosX = e.clientX;
@@ -294,13 +288,14 @@
     });
 
     chart.setSize(getSize());
+
+    chart.setData(chartData)
   });
 </script>
 
 <div id="chart-container" bind:this={chartContainer} />
 <ChartControls 
-  bind:isYAxisAutoScale
-  on:toggleAutoscale={toggleYAxisAutoScale}
+  on:autoscale={autoscaleYAxis}
 />
 
 <div class="y-axis-input-top">

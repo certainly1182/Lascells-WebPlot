@@ -15,3 +15,21 @@ export function getRandomColor () {
 
   return hex
 }
+
+export function parsePeriodString(periodString) {
+  const units = {ms: 0.001, s: 1, min: 60};
+  const match = periodString.match(/(\d+)(ms|s|min)/);
+
+  if(match) {
+    const [, value, unit] = match;
+    return parseFloat(value) * units[unit];
+  }
+
+  throw new Error(`Invalid period string: ${periodString}`)
+}
+
+export function createSineWaveData(numPoints) {
+  const xData = Array.from({ length: numPoints }, (_, i) => i);
+  const yData = xData.map(x => Math.sin(x * 0.1) * 5);
+  return [xData, yData];
+}

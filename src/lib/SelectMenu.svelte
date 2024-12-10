@@ -1,28 +1,33 @@
 <script>
-    export let tooltip
+  import { createEventDispatcher } from "svelte"
 
-    export let options
-    export let defaultOption = undefined
-    export let selectedOption = !defaultOption ? options[0] : defaultOption
+  export let tooltip
 
-    let open = false
+  export let options
+  export let defaultOption = undefined
+  export let selectedOption = !defaultOption ? options[0] : defaultOption
 
-    function toggleMenu () {
-      open = !open
+  let open = false
+
+  const dispatch = createEventDispatcher();
+
+  function toggleMenu () {
+    open = !open
+  }
+
+  function selectOption (option) {
+    selectedOption = option
+    open = false
+    dispatch('change', { selected: option });
+  }
+
+  function focusOut ({ relatedTarget, currentTarget }) {
+    if (relatedTarget instanceof HTMLElement && currentTarget.contains(relatedTarget)) {
+      return
     }
 
-    function selectOption (option) {
-      selectedOption = option
-      open = false
-    }
-
-    function focusOut ({ relatedTarget, currentTarget }) {
-      if (relatedTarget instanceof HTMLElement && currentTarget.contains(relatedTarget)) {
-        return
-      }
-
-      open = false
-    }
+    open = false
+  }
 </script>
 
 <div class="menu-wrapper" on:focusout={focusOut}>

@@ -39,7 +39,7 @@
         position: relative;
         width: 100px;
         height: 40px;
-        background-color: #ccc;
+        background-color: #aaa;
         border-radius: 40px;
         transition: background-color 0.3s;
     }

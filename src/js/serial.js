@@ -4,7 +4,6 @@ let port
 let reader
 const decoder = new TextDecoder()
 
-let dataIdx = 0
 let run = false
 
 export async function serialConnect (baudrate) {
@@ -25,12 +24,14 @@ export function serialStop () {
   run = false
 }
 
+let startTime
+
 export async function serialStart () {
   let line = ''
   run = true
+  startTime = performance.now()
 
   while (run) {
-
     const { value, done } = await reader.read()
 
     if (done) {
@@ -43,13 +44,13 @@ export async function serialStart () {
     for (const char of data) {
       if (char === '\n') {
         line = line.replace(/[\r\n]+/gm, '')
-        const serialLine = `${dataIdx}, ${line}` // Add an index to the line so it updates the reactive statements even if the data is the same.
-                                                 // Also used for the chart x axis data
 
+        const elapsedTime = (performance.now() - startTime) / 1000;
+        const currentTimestamp = elapsedTime.toFixed(3)
+
+        const serialLine = `${currentTimestamp}, ${line}` // Add timestamp to data
         serialLineStore.set(serialLine)
         line = ''
-
-        dataIdx++
       } else {
         line += char
       }

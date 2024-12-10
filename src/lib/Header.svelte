@@ -1,9 +1,9 @@
 <script>
   import { createEventDispatcher } from 'svelte'
   import Button from './Button.svelte'
-  import Dropdown from './Dropdown.svelte'
   import SelectMenu from './SelectMenu.svelte'
   import ToggleSwitch from './ToggleSwitch.svelte';
+  import { parsePeriodString } from '../js/utils';
 
   export let connected
   export let started
@@ -19,6 +19,8 @@
   export let voltageOptions
   export let voltageString
   export let defaultVoltage
+
+  let samplingPeriod_s
 
   const dispatch = createEventDispatcher()
 
@@ -47,6 +49,38 @@
     isPeriodicSampling = checked;
     // Optionally, you can dispatch events here if needed
   }
+
+  function samplingPeriodChange(event) {
+    const period_s = parsePeriodString(event.detail.selected)
+    // TODO: send command to logger
+  }
+
+  function voltageRangeChange(event) {
+    const selectedVoltage = event.detail.selected;
+    switch(selectedVoltage) {
+      case "-1 to +1V":
+        // Handle logic for -1 to +1V voltage range
+        console.log('Voltage range set to -1 to +1V');
+        // TODO: send the command to logger or update relevant state
+        break;
+
+      case "-5 to +5V":
+        // Handle logic for -5 to +5V voltage range
+        console.log('Voltage range set to -5 to +5V');
+        // TODO: send the command to logger or update relevant state
+        break;
+
+      case "-50 to +50V":
+        // Handle logic for -50 to +50V voltage range
+        console.log('Voltage range set to -50 to +50V');
+        // TODO: send the command to logger or update relevant state
+        break;
+
+      default:
+        throw new Error(`Invalid voltage range selected: ${periodString}`);
+        break;
+    }
+  }
 </script>
 <div id="header">
   <img src="logo.svg" id="logo" alt="logo">
@@ -62,13 +96,15 @@
       bind:selectedOption={periodString}
       options={periodOptions}
       defaultOption={defaultPeriod}
+      on:change={samplingPeriodChange}
     />
 
     <SelectMenu
-    tooltip="Voltage Range"
-    bind:selectedOption={voltageString}
-    options={voltageOptions}
-    defaultOption={defaultVoltage}
+      tooltip="Voltage Range"
+      bind:selectedOption={voltageString}
+      options={voltageOptions}
+      defaultOption={defaultVoltage}
+      on:change={voltageRangeChange}
     />
 
     <SelectMenu
