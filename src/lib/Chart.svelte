@@ -318,56 +318,33 @@
 </script>
 
 <div id="chart-container" bind:this={chartContainer}>
+  <div style="position: fixed; top: 4rem; left: 1px; z-index: 15;">
+    <YAxisTriangleControl 
+      type="max"
+      bind:value={manualYScale.max}
+      on:valueChange={handleMaxChange}
+    />
+  </div>
   <ChartControls 
     on:autoscale={autoscaleYAxis}
   />
-  <YAxisTriangleControl 
-    type="max"
-    bind:value={manualYScale.max}
-    top={0}
-    left={0}
-    on:valueChange={handleMaxChange}
-  />
-  <YAxisTriangleControl 
-    type="min"
-    bind:value={manualYScale.min}
-    top={100}
-    left={0}
-    on:valueChange={handleMinChange}
-  />
+  <div style="position: fixed; bottom: 5rem; left: 1px; z-index: 15;">
+    <YAxisTriangleControl 
+      type="min"
+      bind:value={manualYScale.min}
+      on:valueChange={handleMinChange}
+    />
+  </div>
 </div>
 
 <style>
   @import "../../node_modules/uplot/dist/uPlot.min.css";
 
   #chart-container {
-    position: relative;
+    position: fixed;
     width: 100%;
-    height: 100%;
+    height: calc(100%-8rem);
     overflow: hidden;
     padding-top: 1rem;
-  }
-
-  .y-axis-input-top {
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 15;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .y-axis-input-bottom {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    z-index: 15;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .y-axis-input-top input,
-  .y-axis-input-bottom input {
-    width: 58px;
   }
 </style>
