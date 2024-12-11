@@ -1,16 +1,19 @@
 <script>
     export let checked = false;
     export let onChange = () => {};
+    export let disabled = false;
   
     // Handle the change event
     const handleChange = () => {
-      onChange(checked);
+        if (!disabled) {
+            onChange(checked);
+        }
     };
 </script>
   
 <div class="toggle-switch">
     <label>
-        <input type="checkbox" title="Sampling Method" bind:checked on:change={handleChange} />
+        <input type="checkbox" title="Sampling Method" bind:checked on:change={handleChange} disabled={disabled}/>
         <span class="slider">
         <span class="option left">Manual</span>
         <span class="option right">Periodic</span>
@@ -97,6 +100,28 @@
 
     input:not(:checked) + .slider .right {
         opacity: 0;
+    }
+
+    input:disabled + .slider {
+        background-color: #ccc;  /* Light grey background */
+        cursor: not-allowed;  /* Indicate that it is not clickable */
+    }
+
+    input:disabled + .slider:before {
+        background-color: #999;  /* Darker grey for the knob */
+        transform: translateX(var(--knob-position)); /* Keep the knob in its initial position */
+    }
+
+    input:disabled + .slider .left,
+    input:disabled + .slider .right {
+        color: #aaa;  /* Light grey text */
+    }
+
+    input:checked:disabled + .slider:before {
+        transform: translateX(60px); /* Fixed position if checked */
+    }
+    input:not(:checked):disabled + .slider:before {
+        transform: translateX(0); /* Fixed position if unchecked */
     }
 </style>
   

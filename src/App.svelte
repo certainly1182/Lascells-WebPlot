@@ -78,7 +78,10 @@
   />
 
   <main>
-    <Chart bind:numPoints bind:this={chartRef}/>
+    <Chart
+      bind:numPoints
+      bind:this={chartRef}
+    />
   </main>
 
   <Footer

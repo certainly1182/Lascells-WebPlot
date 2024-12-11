@@ -2,20 +2,31 @@
 
 <script>
     import { createEventDispatcher } from 'svelte';
+    import { exportFullDataToCSV } from '../js/serial';
     
     const dispatch = createEventDispatcher();
   
     function handleAutoscale() {
       dispatch('autoscale');
     }
+
+    function handleExport() {
+      exportFullDataToCSV();
+    }
   </script>
   
   <div class="chart-controls">
     <button 
-        class="autoscale-button"
-        on:click={handleAutoscale}
+      class="export-button"
+      on:click={handleExport}
     >
-        Autoscale Y-Axis
+      Export to CSV
+    </button>
+    <button 
+      class="autoscale-button"
+      on:click={handleAutoscale}
+    >
+      Autoscale Y-Axis
     </button>
   </div>
   

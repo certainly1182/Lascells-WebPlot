@@ -6,6 +6,7 @@
   export let options
   export let defaultOption = undefined
   export let selectedOption = !defaultOption ? options[0] : defaultOption
+  export let disabled = false;
 
   let open = false
 
@@ -31,8 +32,8 @@
 </script>
 
 <div class="menu-wrapper" on:focusout={focusOut}>
-    <input type="text" class="menu-input" value={selectedOption} title={tooltip} readonly>
-    <button class="menu-button" on:click={toggleMenu}>▼</button>
+    <input type="text" class="menu-input" value={selectedOption} title={tooltip} readonly disabled={disabled}>
+    <button class="menu-button" on:click={toggleMenu} disabled={disabled}>▼</button>
 
     <div class="menu-options">
         {#if open}
@@ -75,6 +76,7 @@
     width: 40px;
     color: var(--tertiary);
     transition: 0.2s;
+    cursor: pointer;
   }
 
   .menu-options {
@@ -99,9 +101,39 @@
     text-align: left;
     transition: 0.2s;
     white-space: nowrap;
+    cursor: pointer;
   }
 
   .menu-options button:hover {
     background-color: rgba(100, 100, 100, 0.15);
+  }
+
+  /* Disabled state styles */
+  .menu-input[disabled] {
+    background-color: #f0f0f0;  /* Light grey background to indicate it's disabled */
+    color: #b0b0b0;  /* Grey text */
+    border-color: #d0d0d0;  /* Lighter border */
+    cursor: not-allowed;  /* Disable pointer cursor */
+  }
+
+  .menu-button[disabled] {
+    background-color: #f0f0f0;
+    color: #b0b0b0;
+    border-color: #d0d0d0;
+    cursor: not-allowed;
+  }
+
+  .menu-options {
+    display: none; /* Initially hidden */
+  }
+
+  .menu-options button[disabled] {
+    color: #d0d0d0;  /* Grey text for disabled options */
+    cursor: not-allowed;  /* Disable pointer cursor */
+  }
+
+  /* Show options if the menu is open */
+  .menu-wrapper:not([disabled]) .menu-options {
+    display: block;
   }
 </style>

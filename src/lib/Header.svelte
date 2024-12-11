@@ -87,6 +87,7 @@
     <ToggleSwitch 
       checked={isPeriodicSampling} 
       onChange={onToggleChange}
+      disabled={started}
     />
 
     <SelectMenu
@@ -95,6 +96,7 @@
       options={periodOptions}
       defaultOption={defaultPeriod}
       on:change={samplingPeriodChange}
+      disabled={started}
     />
 
     <SelectMenu
@@ -103,6 +105,7 @@
       options={voltageOptions}
       defaultOption={defaultVoltage}
       on:change={voltageRangeChange}
+      disabled={started}
     />
 
     <SelectMenu

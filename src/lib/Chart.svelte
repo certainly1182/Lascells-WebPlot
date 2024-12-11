@@ -2,7 +2,7 @@
 
 <script>
   import { onMount } from 'svelte';
-  import { serialLineStore } from '../js/store';
+  import { serialLineStore, fullDataStore } from '../js/store';
   import uPlot from 'uplot';
   import ChartControls from './ChartControls.svelte';
   import { createSineWaveData } from '../js/utils';
@@ -20,6 +20,7 @@
 
   export function clearChartData() {
     serialLineStore.set("");
+    fullDataStore.set([]);
     
     chartData.forEach((line, index) => {
       chartData[index] = [];
