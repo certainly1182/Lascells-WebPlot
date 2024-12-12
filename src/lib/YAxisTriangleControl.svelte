@@ -9,10 +9,16 @@
 
   const dispatch = createEventDispatcher();
 
-  $: displayValue = value !== null ? parseFloat(value).toFixed(1) : "";
+  $: displayValue =
+    value !== null && !isNaN(value) ? parseFloat(value).toFixed(1) : "";
 
   function handleInput() {
-    value = parseFloat(event.target.value);
+    const newValue = parseFloat(event.target.value);
+    if (isNaN(newValue)) {
+      value = null;
+    } else {
+      value = newValue;
+    }
     dispatch("valueChange", value);
   }
 </script>

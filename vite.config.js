@@ -4,7 +4,7 @@ import { VitePWA } from 'vite-plugin-pwa'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: '/',
+  base: '/Lascells-WebPlot/',
   plugins: [
     svelte(),
     VitePWA(
@@ -18,7 +18,7 @@ export default defineConfig({
               "theme_color": "#212121",
               "name": "WebPlot",
               "short_name": "WebPlot",
-              "start_url": "/",
+              "start_url": "/Lascells-WebPlot/",
               "display": "standalone",
               "icons": [
                 {

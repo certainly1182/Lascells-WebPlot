@@ -3,13 +3,14 @@
 <script>
   import { onMount } from "svelte";
   import { serialLineStore, fullDataStore } from "../js/store";
-  import uPlot from 'uplot';
-  import 'uplot/dist/uPlot.min.css';
+  import uPlot from "uplot";
+  import "uplot/dist/uPlot.min.css";
   import ChartControls from "./ChartControls.svelte";
   import { createSineWaveData } from "../js/utils";
   import YAxisTriangleControl from "./YAxisTriangleControl.svelte";
 
   let chart;
+  let toastMessage = "";
 
   export let numPoints;
   const maxLines = 30;
@@ -104,7 +105,8 @@
           time: false,
         },
         y: {
-          auto: true,
+          auto: false,
+          range: [-6, 6],
         },
       },
       axes: [
@@ -287,12 +289,27 @@
   }
 
   function handleMaxChange(event) {
-    manualYScale.max = event.detail;
+    const newMax = event.detail;
+
+    // Ensure max is greater than min
+    if (manualYScale.min !== null && newMax <= manualYScale.min) {
+      manualYScale.max = manualYScale.min + 0.1; // Set a minimum gap
+    } else {
+      manualYScale.max = newMax;
+    }
     updateYScale();
   }
 
   function handleMinChange(event) {
-    manualYScale.min = event.detail;
+    const newMin = event.detail;
+
+    // Ensure min is less than max
+    if (manualYScale.max !== null && newMin >= manualYScale.max) {
+      manualYScale.min = manualYScale.max - 0.1; // Set a minimum gap
+    } else {
+      manualYScale.min = newMin;
+    }
+
     updateYScale();
   }
 
@@ -309,13 +326,13 @@
 
   onMount(() => {
     chart = createChart();
-    
+
     window.addEventListener("resize", () => {
       chart.setSize(getSize());
     });
 
     chart.setSize(getSize());
-    
+
     chart.setData(chartData);
   });
 </script>
@@ -342,6 +359,7 @@
   #chart-container {
     position: relative;
     width: 100%;
-    height: 100%;
+    height: (100% - 8rem);
+    padding-top: 1rem;
   }
 </style>

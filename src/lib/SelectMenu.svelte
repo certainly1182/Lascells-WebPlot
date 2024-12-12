@@ -137,10 +137,10 @@
     display: none; /* Initially hidden */
   }
 
-  .menu-options button[disabled] {
-    color: #d0d0d0; /* Grey text for disabled options */
-    cursor: not-allowed; /* Disable pointer cursor */
-  }
+  /* .menu-options button[disabled] {
+    color: #d0d0d0;
+    cursor: not-allowed;
+  } */
 
   /* Show options if the menu is open */
   .menu-wrapper:not([disabled]) .menu-options {
