@@ -1,4 +1,5 @@
 import { serialLineStore, fullDataStore } from "./store.js";
+import { parsePeriodString } from "./utils.js";
 
 let port;
 let reader;
@@ -102,4 +103,72 @@ export function exportFullDataToCSV() {
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
+}
+
+export async function sendSerialCommand(command) {
+  if (!port || port?.state !== "open") {
+    console.error("Serial port is not open");
+    return;
+  }
+
+  // Convert the command string to a Uint8Array
+  const encoder = new TextEncoder();
+  const commandBytes = encoder.encode(command);
+
+  // Send the command through the serial port
+  const writer = port.writable.getWriter();
+  try {
+    await writer.write(commandBytes);
+    writer.releaseLock();
+    console.log(`Sent command: ${command}`);
+  } catch (error) {
+    console.error("Error sending command:", error);
+  }
+}
+
+export async function sendConfigCommand(periodString, voltageString) {
+  try {
+    const period = parsePeriodString(periodString);
+
+    const samplingCode = {
+      "Manual": "@",
+      "1ms": "A",
+      "2ms": "B",
+      "5ms": "C",
+      "10ms": "D",
+      "25ms": "E",
+      "50ms": "F",
+      "100ms": "G",
+      "200ms": "H",
+      "500ms": "I",
+      "1s": "J",
+      "2s": "K",
+      "5s": "L",
+      "10s": "M",
+      "15s": "N",
+      "30s": "O",
+      "1min": "P"
+    }[periodString];
+
+    if (!samplingCode) {
+      throw new Error(`Invalid sampling period: ${periodString}`);
+    }
+
+    const voltageCode = {
+      "Auto": "0",
+      "-1 to +1V": "1",
+      "-5 to +5V": "2",
+      "-50 to +50V": "3",
+    }[voltageString];
+
+    if (!voltageCode) {
+      throw new Error(`Invalid voltage range: ${voltageString}`);
+    }
+
+    const command = `${samplingCode}${voltageCode}`;
+
+    await sendSerialCommand(command);
+  } catch (error) {
+    console.error("Error in sending serial command:", error);
+  }
 }

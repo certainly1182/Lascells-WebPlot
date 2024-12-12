@@ -6,6 +6,7 @@
     serialDisconnect,
     serialStart,
     serialStop,
+    sendConfigCommand
   } from "./js/serial";
   import { serialLineStore } from "./js/store.js";
 
@@ -14,7 +15,7 @@
   import Footer from "./lib/Footer.svelte";
 
   let pointsOptions = [10, 20, 50, 100, 500, 1000, 5000, 10000];
-  let defaultPoints = pointsOptions[5];
+  let defaultPoints = pointsOptions[3];
   let numPoints;
 
   let periodOptions = [
@@ -47,6 +48,8 @@
 
   let chartRef;
 
+  let isPeriodicSampling = false;
+
   function clearChart() {
     chartRef.clearChartData();
   }
@@ -67,6 +70,11 @@
     if (!started) {
       clearChart();
       serialStart();
+      if (isPeriodicSampling) {
+        sendConfigCommand('#', voltageString);
+      } else {
+        sendConfigCommand(periodString, voltageString);
+      }
     } else {
       serialStop();
     }
@@ -93,6 +101,7 @@
     bind:defaultVoltage
     on:start={onStart}
     on:connect={onConnect}
+    bind:isPeriodicSampling
   />
 
   <main>

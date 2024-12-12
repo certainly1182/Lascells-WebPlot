@@ -334,6 +334,7 @@
     chart.setSize(getSize());
 
     chart.setData(chartData);
+    autoscaleYAxis();
   });
 </script>
 
