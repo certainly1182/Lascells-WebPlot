@@ -1,42 +1,42 @@
 <script>
-  import { createEventDispatcher } from 'svelte'
-  import Button from './Button.svelte'
-  import SelectMenu from './SelectMenu.svelte'
-  import ToggleSwitch from './ToggleSwitch.svelte';
-  import { parsePeriodString } from '../js/utils';
+  import { createEventDispatcher } from "svelte";
+  import Button from "./Button.svelte";
+  import SelectMenu from "./SelectMenu.svelte";
+  import ToggleSwitch from "./ToggleSwitch.svelte";
+  import { parsePeriodString } from "../js/utils";
 
-  export let connected
-  export let started
+  export let connected;
+  export let started;
 
-  export let pointsOptions
-  export let numPoints
-  export let defaultPoints
+  export let pointsOptions;
+  export let numPoints;
+  export let defaultPoints;
 
-  export let periodOptions
-  export let periodString
-  export let defaultPeriod
+  export let periodOptions;
+  export let periodString;
+  export let defaultPeriod;
 
-  export let voltageOptions
-  export let voltageString
-  export let defaultVoltage
+  export let voltageOptions;
+  export let voltageString;
+  export let defaultVoltage;
 
-  const dispatch = createEventDispatcher()
+  const dispatch = createEventDispatcher();
 
-  $: startButtonText = !started ? 'Start' : 'Stop'
-  $: startButtonColour = !started ? 'green' : 'red'
-  function onStart () {
-    dispatch('start')
+  $: startButtonText = !started ? "Start" : "Stop";
+  $: startButtonColour = !started ? "green" : "red";
+  function onStart() {
+    dispatch("start");
   }
 
-  function onConnect () {
-    dispatch('connect')
+  function onConnect() {
+    dispatch("connect");
   }
 
-  let connectButtonText
-  $: if ('serial' in navigator) {
-    connectButtonText = !connected ? 'Connect' : 'Disconnect'
+  let connectButtonText;
+  $: if ("serial" in navigator) {
+    connectButtonText = !connected ? "Connect" : "Disconnect";
   } else {
-    connectButtonText = 'Browser doesn\'t support WebSerial'
+    connectButtonText = "Browser doesn't support WebSerial";
   }
 
   // Variable to control sampling mode
@@ -49,28 +49,28 @@
   }
 
   function samplingPeriodChange(event) {
-    const period_s = parsePeriodString(event.detail.selected)
+    const period_s = parsePeriodString(event.detail.selected);
     // TODO: send command to logger
   }
 
   function voltageRangeChange(event) {
     const selectedVoltage = event.detail.selected;
-    switch(selectedVoltage) {
+    switch (selectedVoltage) {
       case "-1 to +1V":
         // Handle logic for -1 to +1V voltage range
-        console.log('Voltage range set to -1 to +1V');
+        console.log("Voltage range set to -1 to +1V");
         // TODO: send the command to logger or update relevant state
         break;
 
       case "-5 to +5V":
         // Handle logic for -5 to +5V voltage range
-        console.log('Voltage range set to -5 to +5V');
+        console.log("Voltage range set to -5 to +5V");
         // TODO: send the command to logger or update relevant state
         break;
 
       case "-50 to +50V":
         // Handle logic for -50 to +50V voltage range
-        console.log('Voltage range set to -50 to +50V');
+        console.log("Voltage range set to -50 to +50V");
         // TODO: send the command to logger or update relevant state
         break;
 
@@ -80,12 +80,13 @@
     }
   }
 </script>
+
 <div id="header">
-  <img src="logo.svg" id="logo" alt="logo">
+  <img src="logo.svg" id="logo" alt="logo" />
 
   <div id="container-right">
-    <ToggleSwitch 
-      checked={isPeriodicSampling} 
+    <ToggleSwitch
+      checked={isPeriodicSampling}
       onChange={onToggleChange}
       disabled={started}
     />
@@ -116,14 +117,16 @@
     />
 
     {#if connected}
-      <Button bind:name={startButtonText}
-            --background-color={startButtonColour}
-            --color=white
-            on:click={onStart}
+      <Button
+        bind:name={startButtonText}
+        --background-color={startButtonColour}
+        --color="white"
+        on:click={onStart}
       />
     {/if}
 
-    <Button bind:name={connectButtonText}
+    <Button
+      bind:name={connectButtonText}
       --background-color="var(--primary)"
       --color="var(--on-primary)"
       on:click={onConnect}

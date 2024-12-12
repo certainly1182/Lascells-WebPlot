@@ -1,11 +1,11 @@
 <!-- lib/YAxisTriangleControl.svelte -->
 <script>
-  import { createEventDispatcher } from 'svelte';
-  import { faForwardStep } from '@fortawesome/free-solid-svg-icons';
-  import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
+  import { createEventDispatcher } from "svelte";
+  import { faForwardStep } from "@fortawesome/free-solid-svg-icons";
+  import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
 
   export let value = null;
-  export let type = 'max'; // 'max' or 'min'
+  export let type = "max"; // 'max' or 'min'
 
   const dispatch = createEventDispatcher();
 
@@ -13,24 +13,24 @@
 
   function handleInput() {
     value = parseFloat(event.target.value);
-    dispatch('valueChange', value);
+    dispatch("valueChange", value);
   }
 </script>
-  
+
 <div class="y-axis-triangle-control">
-  <input 
-    type="number" 
+  <input
+    type="number"
     value={displayValue}
-    on:input={handleInput} 
-    placeholder={type === 'max' ? 'Max' : 'Min'}
+    on:input={handleInput}
+    placeholder={type === "max" ? "Max" : "Min"}
     class="y-axis-input"
   />
-  <FontAwesomeIcon 
+  <FontAwesomeIcon
     icon={faForwardStep}
     style="transform: rotate({type === 'max' ? 270 : 90}deg);"
   />
 </div>
-  
+
 <style>
   .y-axis-triangle-control {
     display: flex;

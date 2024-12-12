@@ -1,20 +1,36 @@
 <script>
-  let open = false
+  let open = false;
 
-  function focusOut ({ relatedTarget, currentTarget }) {
-    if (relatedTarget instanceof HTMLElement && currentTarget.contains(relatedTarget)) {
-      return
+  function focusOut({ relatedTarget, currentTarget }) {
+    if (
+      relatedTarget instanceof HTMLElement &&
+      currentTarget.contains(relatedTarget)
+    ) {
+      return;
     }
 
-    open = false
+    open = false;
   }
-
 </script>
 
 <div id="dropdown" on:focusout={focusOut}>
-  <button on:click={() => { open = !open }} class:open={open}>
-    <svg width="20px" height="20px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="var(--on-background-secondary)" class="bi bi-three-dots-vertical">
-      <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
+  <button
+    on:click={() => {
+      open = !open;
+    }}
+    class:open
+  >
+    <svg
+      width="20px"
+      height="20px"
+      viewBox="0 0 16 16"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="var(--on-background-secondary)"
+      class="bi bi-three-dots-vertical"
+    >
+      <path
+        d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"
+      />
     </svg>
   </button>
   {#if open}
@@ -44,7 +60,8 @@
     transition: 0.3s;
   }
 
-  button:hover, button.open {
+  button:hover,
+  button.open {
     background-color: rgba(100, 100, 100, 0.15);
   }
 

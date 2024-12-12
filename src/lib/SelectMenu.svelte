@@ -1,47 +1,57 @@
 <script>
-  import { createEventDispatcher } from "svelte"
+  import { createEventDispatcher } from "svelte";
 
-  export let tooltip
+  export let tooltip;
 
-  export let options
-  export let defaultOption = undefined
-  export let selectedOption = !defaultOption ? options[0] : defaultOption
+  export let options;
+  export let defaultOption = undefined;
+  export let selectedOption = !defaultOption ? options[0] : defaultOption;
   export let disabled = false;
 
-  let open = false
+  let open = false;
 
   const dispatch = createEventDispatcher();
 
-  function toggleMenu () {
-    open = !open
+  function toggleMenu() {
+    open = !open;
   }
 
-  function selectOption (option) {
-    selectedOption = option
-    open = false
-    dispatch('change', { selected: option });
+  function selectOption(option) {
+    selectedOption = option;
+    open = false;
+    dispatch("change", { selected: option });
   }
 
-  function focusOut ({ relatedTarget, currentTarget }) {
-    if (relatedTarget instanceof HTMLElement && currentTarget.contains(relatedTarget)) {
-      return
+  function focusOut({ relatedTarget, currentTarget }) {
+    if (
+      relatedTarget instanceof HTMLElement &&
+      currentTarget.contains(relatedTarget)
+    ) {
+      return;
     }
 
-    open = false
+    open = false;
   }
 </script>
 
 <div class="menu-wrapper" on:focusout={focusOut}>
-    <input type="text" class="menu-input" value={selectedOption} title={tooltip} readonly disabled={disabled}>
-    <button class="menu-button" on:click={toggleMenu} disabled={disabled}>▼</button>
+  <input
+    type="text"
+    class="menu-input"
+    value={selectedOption}
+    title={tooltip}
+    readonly
+    {disabled}
+  />
+  <button class="menu-button" on:click={toggleMenu} {disabled}>▼</button>
 
-    <div class="menu-options">
-        {#if open}
-          {#each options as option}
-            <button on:click={() => selectOption(option)}>{option}</button>
-          {/each}
-        {/if}
-    </div>
+  <div class="menu-options">
+    {#if open}
+      {#each options as option}
+        <button on:click={() => selectOption(option)}>{option}</button>
+      {/each}
+    {/if}
+  </div>
 </div>
 
 <style>
@@ -110,10 +120,10 @@
 
   /* Disabled state styles */
   .menu-input[disabled] {
-    background-color: #f0f0f0;  /* Light grey background to indicate it's disabled */
-    color: #b0b0b0;  /* Grey text */
-    border-color: #d0d0d0;  /* Lighter border */
-    cursor: not-allowed;  /* Disable pointer cursor */
+    background-color: #f0f0f0; /* Light grey background to indicate it's disabled */
+    color: #b0b0b0; /* Grey text */
+    border-color: #d0d0d0; /* Lighter border */
+    cursor: not-allowed; /* Disable pointer cursor */
   }
 
   .menu-button[disabled] {
@@ -128,8 +138,8 @@
   }
 
   .menu-options button[disabled] {
-    color: #d0d0d0;  /* Grey text for disabled options */
-    cursor: not-allowed;  /* Disable pointer cursor */
+    color: #d0d0d0; /* Grey text for disabled options */
+    cursor: not-allowed; /* Disable pointer cursor */
   }
 
   /* Show options if the menu is open */

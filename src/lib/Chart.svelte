@@ -1,12 +1,12 @@
 <!-- lib/Chart.svelte -->
 
 <script>
-  import { onMount } from 'svelte';
-  import { serialLineStore, fullDataStore } from '../js/store';
-  import uPlot from 'uplot';
-  import ChartControls from './ChartControls.svelte';
-  import { createSineWaveData } from '../js/utils';
-  import YAxisTriangleControl from './YAxisTriangleControl.svelte';
+  import { onMount } from "svelte";
+  import { serialLineStore, fullDataStore } from "../js/store";
+  import uPlot from "uplot";
+  import ChartControls from "./ChartControls.svelte";
+  import { createSineWaveData } from "../js/utils";
+  import YAxisTriangleControl from "./YAxisTriangleControl.svelte";
 
   let chart;
 
@@ -14,14 +14,14 @@
   const maxLines = 30;
 
   const chartData = Array.from({ length: maxLines + 1 }, () => []);
-  
+
   let chartContainer;
   let manualYScale = { min: null, max: null };
 
   export function clearChartData() {
     serialLineStore.set("");
     fullDataStore.set([]);
-    
+
     chartData.forEach((line, index) => {
       chartData[index] = [];
     });
@@ -40,12 +40,12 @@
   }
 
   function parseLine(line) {
-    const lineSplit = line.split(',');
+    const lineSplit = line.split(",");
 
     const data = [];
 
     for (const num of lineSplit) {
-      if (num === '') {
+      if (num === "") {
         break;
       }
 
@@ -64,7 +64,7 @@
   function updateChart() {
     const line = $serialLineStore;
 
-    if (line.length === 0 || line === 'undefined') {
+    if (line.length === 0 || line === "undefined") {
       return;
     }
 
@@ -74,9 +74,9 @@
     chart.setData(chartData);
 
     chart.batch(() => {
-      chart.setScale('y', { 
-        min: manualYScale.min, 
-        max: manualYScale.max 
+      chart.setScale("y", {
+        min: manualYScale.min,
+        max: manualYScale.max,
       });
     });
   }
@@ -90,7 +90,7 @@
       const color = "#26488b";
 
       seriesOpts.push({
-        label: `Line ${i+1}`,
+        label: `Line ${i + 1}`,
         stroke: color,
         fill: `${color}1A`,
       });
@@ -108,30 +108,30 @@
       },
       axes: [
         {
-          scale: 'x',
+          scale: "x",
           show: true,
           label: "Time (s)",
           width: 1,
-          stroke: '#000',
+          stroke: "#000",
           ticks: {
             width: 0.2,
-            stroke: '#000',
+            stroke: "#000",
           },
           grid: {
             width: 0.2,
-            stroke: '#000',
+            stroke: "#000",
           },
         },
         {
           label: "Voltage (V)",
-          stroke: '#000',
+          stroke: "#000",
           ticks: {
             width: 0.2,
-            stroke: '#000',
+            stroke: "#000",
           },
           grid: {
             width: 0.2,
-            stroke: '#000',
+            stroke: "#000",
           },
         },
       ],
@@ -145,7 +145,7 @@
         show: false,
       },
       font: {
-        color: '#000',
+        color: "#000",
       },
       series: seriesOpts,
       hooks: {
@@ -165,11 +165,11 @@
     if (chart) {
       // Perform one-time autoscale
       chart.batch(() => {
-        chart.setScale('y', { auto: true });
+        chart.setScale("y", { auto: true });
       });
       manualYScale = {
         min: chart.scales.y.min,
-        max: chart.scales.y.max
+        max: chart.scales.y.max,
       };
     }
   }
@@ -177,7 +177,7 @@
   function updateYScaleFromInput() {
     if (manualYScale.min !== null && manualYScale.max !== null) {
       chart.batch(() => {
-        chart.setScale('y', {
+        chart.setScale("y", {
           min: manualYScale.min,
           max: manualYScale.max,
         });
@@ -212,7 +212,7 @@
       e.preventDefault();
 
       const { width } = rect;
-      const xVal = u.posToVal(e.offsetX, 'x');
+      const xVal = u.posToVal(e.offsetX, "x");
       const xRange = u.scales.x.max - u.scales.x.min;
 
       const zoomFactor = e.deltaY < 0 ? factor : 1 / factor;
@@ -221,7 +221,7 @@
 
       if (newMax - newMin > 0.1) {
         u.batch(() => {
-          u.setScale('x', { min: newMin, max: newMax });
+          u.setScale("x", { min: newMin, max: newMax });
         });
       }
     }
@@ -252,10 +252,10 @@
       const nyMax = yScale.max + dy * (yRange / rect.height);
 
       u.batch(() => {
-        u.setScale('x', { min: nxMin, max: nxMax });
-        
-        u.setScale('y', { min: nyMin, max: nyMax });
-        
+        u.setScale("x", { min: nxMin, max: nxMax });
+
+        u.setScale("y", { min: nyMin, max: nyMax });
+
         manualYScale = { min: nyMin, max: nyMax };
       });
 
@@ -269,30 +269,32 @@
       lastPosY = null;
     }
 
-    over.addEventListener('wheel', zoom);
-    over.addEventListener('mousedown', startPan);
-    window.addEventListener('mousemove', doPan);
-    window.addEventListener('mouseup', endPan);
+    over.addEventListener("wheel", zoom);
+    over.addEventListener("mousedown", startPan);
+    window.addEventListener("mousemove", doPan);
+    window.addEventListener("mouseup", endPan);
   }
 
   function getSize() {
-    const remInPixels = parseFloat(getComputedStyle(document.documentElement).fontSize);
+    const remInPixels = parseFloat(
+      getComputedStyle(document.documentElement).fontSize
+    );
     return {
       width: window.innerWidth,
-      height: window.innerHeight - (9 * remInPixels),
+      height: window.innerHeight - 9 * remInPixels,
     };
   }
 
   onMount(() => {
     chart = createChart();
 
-    window.addEventListener('resize', () => {
+    window.addEventListener("resize", () => {
       chart.setSize(getSize());
     });
 
     chart.setSize(getSize());
 
-    chart.setData(chartData)
+    chart.setData(chartData);
   });
 
   function handleMaxChange(event) {
@@ -308,29 +310,26 @@
   function updateYScale() {
     if (chart && manualYScale.min !== null && manualYScale.max !== null) {
       chart.batch(() => {
-        chart.setScale('y', {
+        chart.setScale("y", {
           min: manualYScale.min,
           max: manualYScale.max,
         });
       });
     }
   }
-
 </script>
 
 <div id="chart-container" bind:this={chartContainer}>
   <div style="position: fixed; top: 4rem; left: 1px; z-index: 15;">
-    <YAxisTriangleControl 
+    <YAxisTriangleControl
       type="max"
       bind:value={manualYScale.max}
       on:valueChange={handleMaxChange}
     />
   </div>
-  <ChartControls 
-    on:autoscale={autoscaleYAxis}
-  />
+  <ChartControls on:autoscale={autoscaleYAxis} />
   <div style="position: fixed; bottom: 5rem; left: 1px; z-index: 15;">
-    <YAxisTriangleControl 
+    <YAxisTriangleControl
       type="min"
       bind:value={manualYScale.min}
       on:valueChange={handleMinChange}
