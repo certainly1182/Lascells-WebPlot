@@ -9,15 +9,17 @@
     "preview": "vite preview"
   },
   "devDependencies": {
-    "@sveltejs/vite-plugin-svelte": "^2.5.3",
-    "svelte": "^4.0.5",
-    "vite": "^4.5.5",
-    "vite-plugin-pwa": "^0.16.6"
+    "@sveltejs/adapter-static": "^3.0.6",
+    "@sveltejs/vite-plugin-svelte": "^5.0.1",
+    "gh-pages": "^6.2.0",
+    "svelte": "^5.11.2",
+    "uplot": "^1.6.31",
+    "vite": "^6.0.3",
+    "vite-plugin-pwa": "^0.21.1"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.7.1",
     "@fortawesome/free-solid-svg-icons": "^6.7.1",
-    "@fortawesome/svelte-fontawesome": "^0.2.3",
-    "uplot": "^1.6.26"
+    "@fortawesome/svelte-fontawesome": "^0.2.3"
   }
 }

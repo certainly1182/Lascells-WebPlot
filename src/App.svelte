@@ -106,8 +106,8 @@
   #app {
     display: flex;
     flex-direction: column;
-    height: 100vh; /* Full viewport height */
-    overflow: hidden; /* Prevent scrolling */
+    height: 100vh;
+    overflow: hidden;
   }
 
   main {

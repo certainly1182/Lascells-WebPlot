@@ -3,7 +3,8 @@
 <script>
   import { onMount } from "svelte";
   import { serialLineStore, fullDataStore } from "../js/store";
-  import uPlot from "uplot";
+  import uPlot from 'uplot';
+  import 'uplot/dist/uPlot.min.css';
   import ChartControls from "./ChartControls.svelte";
   import { createSineWaveData } from "../js/utils";
   import YAxisTriangleControl from "./YAxisTriangleControl.svelte";
@@ -285,18 +286,6 @@
     };
   }
 
-  onMount(() => {
-    chart = createChart();
-
-    window.addEventListener("resize", () => {
-      chart.setSize(getSize());
-    });
-
-    chart.setSize(getSize());
-
-    chart.setData(chartData);
-  });
-
   function handleMaxChange(event) {
     manualYScale.max = event.detail;
     updateYScale();
@@ -317,6 +306,18 @@
       });
     }
   }
+
+  onMount(() => {
+    chart = createChart();
+    
+    window.addEventListener("resize", () => {
+      chart.setSize(getSize());
+    });
+
+    chart.setSize(getSize());
+    
+    chart.setData(chartData);
+  });
 </script>
 
 <div id="chart-container" bind:this={chartContainer}>
@@ -338,13 +339,9 @@
 </div>
 
 <style>
-  @import "../../node_modules/uplot/dist/uPlot.min.css";
-
   #chart-container {
-    position: fixed;
+    position: relative;
     width: 100%;
-    height: calc(100%-8rem);
-    overflow: hidden;
-    padding-top: 1rem;
+    height: 100%;
   }
 </style>
