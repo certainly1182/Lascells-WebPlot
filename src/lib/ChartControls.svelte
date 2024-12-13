@@ -31,7 +31,7 @@
     z-index: 10;
   }
 
-  .autoscale-button {
+  .autoscale-button, .export-button {
     padding: 0.5rem;
     height: 2rem;
     background-color: #26488b;
@@ -42,7 +42,7 @@
     transition: background-color 0.3s ease;
   }
 
-  .autoscale-button:hover {
+  .autoscale-button:hover, .export-button:hover {
     background-color: #1e3a6d;
   }
 </style>

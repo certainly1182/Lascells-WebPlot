@@ -1,5 +1,6 @@
 import { serialLineStore, fullDataStore } from "./store.js";
 import { parsePeriodString } from "./utils.js";
+import isPeriodicSampling from "../App.svelte"
 
 let port;
 let reader;
@@ -8,10 +9,15 @@ const decoder = new TextDecoder();
 let run = false;
 
 export async function serialConnect(baudrate) {
-  port = await navigator.serial.requestPort();
-  await port.open({ baudRate: baudrate });
-  reader = port.readable.getReader();
-  run = true;
+  try {
+    port = await navigator.serial.requestPort();
+    await port.open({ baudRate: baudrate });
+    reader = port.readable.getReader();
+    run = true;
+    console.log("Serial port opened successfully:", port);
+  } catch (error) {
+    console.error("Error during serial connection:", error);
+  }
 
   fullDataStore.set([]);
 }
@@ -33,6 +39,7 @@ export async function serialStart() {
   let line = "";
   run = true;
   startTime = performance.now();
+  let index = 0;
 
   while (run) {
     const { value, done } = await reader.read();
@@ -47,11 +54,11 @@ export async function serialStart() {
     for (const char of data) {
       if (char === "\n") {
         line = line.replace(/[\r\n]+/gm, "");
+        
+        const serialLine = isPeriodicSampling 
+          ? `${((performance.now() - startTime) / 1000).toFixed(3)}, ${line}`
+          : `${index}, ${line}`;
 
-        const elapsedTime = (performance.now() - startTime) / 1000;
-        const currentTimestamp = elapsedTime.toFixed(3);
-
-        const serialLine = `${currentTimestamp}, ${line}`; // Add timestamp to data
         serialLineStore.set(serialLine);
 
         const parsedData = line.split(",").map((val) => {
@@ -61,6 +68,7 @@ export async function serialStart() {
         fullDataStore.update((currentData) => [...currentData, parsedData]);
 
         line = "";
+        index++;
       } else {
         line += char;
       }
@@ -75,7 +83,7 @@ export function exportFullDataToCSV() {
   });
   unsubscribe();
 
-  let csvContent = "Time (s),";
+  let csvContent = isPeriodicSampling ? "Time (s)," : "Index,";
 
   if (fullData.length > 0) {
     for (let i = 0; i < fullData[0].length; i++) {
@@ -84,7 +92,9 @@ export function exportFullDataToCSV() {
     csvContent = csvContent.slice(0, -1) + "\n";
 
     fullData.forEach((dataPoint, index) => {
-      csvContent += `${index * 0.01},`; // TODO: use sampling period
+      csvContent += isPeriodicSampling 
+        ? `${index * 0.01},`  // TODO: use sampling period 
+        : `${index},`;
 
       dataPoint.forEach((value) => {
         csvContent += `${value},`;
@@ -106,8 +116,8 @@ export function exportFullDataToCSV() {
 }
 
 export async function sendSerialCommand(command) {
-  if (!port || port?.state !== "open") {
-    console.error("Serial port is not open");
+  if (!port) {
+    console.error("Port not open!");
     return;
   }
 
@@ -119,19 +129,18 @@ export async function sendSerialCommand(command) {
   const writer = port.writable.getWriter();
   try {
     await writer.write(commandBytes);
-    writer.releaseLock();
     console.log(`Sent command: ${command}`);
   } catch (error) {
     console.error("Error sending command:", error);
+  } finally {
+    writer.releaseLock();
   }
 }
 
 export async function sendConfigCommand(periodString, voltageString) {
   try {
-    const period = parsePeriodString(periodString);
-
     const samplingCode = {
-      "Manual": "@",
+      "Manual": ".",
       "1ms": "A",
       "2ms": "B",
       "5ms": "C",
@@ -165,7 +174,7 @@ export async function sendConfigCommand(periodString, voltageString) {
       throw new Error(`Invalid voltage range: ${voltageString}`);
     }
 
-    const command = `${samplingCode}${voltageCode}`;
+    const command = `>${samplingCode}${voltageCode}\n`;
 
     await sendSerialCommand(command);
   } catch (error) {

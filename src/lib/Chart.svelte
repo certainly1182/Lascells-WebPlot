@@ -10,7 +10,15 @@
   import YAxisTriangleControl from "./YAxisTriangleControl.svelte";
 
   let chart;
-  let toastMessage = "";
+  export let isPeriodicSampling;
+  let xAxisLabel;
+  $: {
+    xAxisLabel = isPeriodicSampling ? "Time (s)" : "Index";
+  }
+  $: if (chart) {
+    chart.axes[0].label = xAxisLabel;
+    chart.redraw();
+  }
 
   export let numPoints;
   const maxLines = 30;
@@ -113,7 +121,7 @@
         {
           scale: "x",
           show: true,
-          label: "Time (s)",
+          label: xAxisLabel,
           width: 1,
           stroke: "#000",
           ticks: {
@@ -288,14 +296,19 @@
     };
   }
 
+  let isMaxValid = true;
+  let isMinValid = true;
+
   function handleMaxChange(event) {
     const newMax = event.detail;
 
     // Ensure max is greater than min
     if (manualYScale.min !== null && newMax <= manualYScale.min) {
       manualYScale.max = manualYScale.min + 0.1; // Set a minimum gap
+      isMaxValid = false;
     } else {
       manualYScale.max = newMax;
+      isMaxValid = true;
     }
     updateYScale();
   }
@@ -306,8 +319,10 @@
     // Ensure min is less than max
     if (manualYScale.max !== null && newMin >= manualYScale.max) {
       manualYScale.min = manualYScale.max - 0.1; // Set a minimum gap
+      isMinValid = false;
     } else {
       manualYScale.min = newMin;
+      isMinValid = true;
     }
 
     updateYScale();
@@ -344,6 +359,7 @@
       type="max"
       bind:value={manualYScale.max}
       on:valueChange={handleMaxChange}
+      valid={isMaxValid}
     />
   </div>
   <ChartControls on:autoscale={autoscaleYAxis} />
@@ -352,6 +368,7 @@
       type="min"
       bind:value={manualYScale.min}
       on:valueChange={handleMinChange}
+      valid={isMinValid}
     />
   </div>
 </div>

@@ -6,6 +6,7 @@
 
   export let value = null;
   export let type = "max"; // 'max' or 'min'
+  export let valid = true;
 
   const dispatch = createEventDispatcher();
 
@@ -29,7 +30,7 @@
     value={displayValue}
     on:input={handleInput}
     placeholder={type === "max" ? "Max" : "Min"}
-    class="y-axis-input"
+    class="y-axis-input {valid ? '' : 'invalid'}"
   />
   <FontAwesomeIcon
     icon={faForwardStep}
@@ -60,5 +61,15 @@
     background: white;
     border: 1px solid #26488b;
     border-radius: 4px;
+    outline: none;
+  }
+
+  .y-axis-input:focus {
+    outline: none; /* Remove browser's default focus outline */
+    border: 2px solid #26488b; /* Add your own focus styling */
+  }
+
+  .y-axis-input.invalid {
+    border: 2px solid red; /* Ensure the red border is prominent */
   }
 </style>

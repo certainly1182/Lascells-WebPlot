@@ -6,7 +6,8 @@
     serialDisconnect,
     serialStart,
     serialStop,
-    sendConfigCommand
+    sendConfigCommand,
+    sendSerialCommand
   } from "./js/serial";
   import { serialLineStore } from "./js/store.js";
 
@@ -37,18 +38,18 @@
     "1min",
   ];
   let defaultPeriod = periodOptions[6];
-  let periodString;
+  let periodString = defaultPeriod;
 
   let voltageOptions = ["-1 to +1V", "-5 to +5V", "-50 to +50V"];
   let defaultVoltage = voltageOptions[2];
-  let voltageString;
+  let voltageString = defaultVoltage;
 
   let connected = false;
   let started = false;
 
   let chartRef;
 
-  let isPeriodicSampling = false;
+  let isPeriodicSampling = true;
 
   function clearChart() {
     chartRef.clearChartData();
@@ -67,11 +68,15 @@
   }
 
   function onStart() {
+    if (!connected) {
+      console.error("Serial port is not open");
+      return;
+    }
     if (!started) {
       clearChart();
       serialStart();
-      if (isPeriodicSampling) {
-        sendConfigCommand('#', voltageString);
+      if (!isPeriodicSampling) {
+        sendConfigCommand("Manual", voltageString);
       } else {
         sendConfigCommand(periodString, voltageString);
       }
@@ -83,6 +88,23 @@
 
   function onConnect() {
     !connected ? connect() : disconnect();
+  }
+
+  import { onMount, onDestroy } from 'svelte';
+
+  onMount(() => {
+    window.addEventListener('keydown', handleSpacebar);
+  });
+
+  onDestroy(() => {
+    window.removeEventListener('keydown', handleSpacebar);
+  });
+
+  function handleSpacebar(event) {
+    if(!connected) return;
+    if (isPeriodicSampling) return;
+    if (event.code !== 'Space') return;
+    sendSerialCommand('#');
   }
 </script>
 
@@ -105,7 +127,7 @@
   />
 
   <main>
-    <Chart bind:numPoints bind:this={chartRef} />
+    <Chart bind:numPoints bind:this={chartRef} bind:isPeriodicSampling/>
   </main>
 
   <Footer />
