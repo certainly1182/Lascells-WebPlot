@@ -3,6 +3,7 @@
   import Button from "./Button.svelte";
   import SelectMenu from "./SelectMenu.svelte";
   import ToggleSwitch from "./ToggleSwitch.svelte";
+  import ProductMenu from "./ProductMenu.svelte";
   import { parsePeriodString } from "../js/utils";
   import { sendSerialCommand } from "../js/serial";
 
@@ -23,6 +24,13 @@
 
   const dispatch = createEventDispatcher();
 
+  let isModalOpen = false;
+  function handleProductSelect(event) {
+    const selectedProduct = event.detail.product;
+    // Handle the selected product
+    console.log("Selected product:", selectedProduct);
+  }
+  $: selectProductText = "Select Product";
   $: startButtonText = !started ? "Start" : "Stop";
   $: startButtonColour = !started ? "green" : "red";
   function onStart() {
@@ -55,7 +63,6 @@
 
   function voltageRangeChange(event) {
     const selectedVoltage = event.detail.selected;
-
   }
 </script>
 
@@ -63,6 +70,20 @@
   <img src="logo.svg" id="logo" alt="logo" />
 
   <div id="container-right">
+    <Button
+      bind:name={selectProductText}
+      --background-color="var(--primary)"
+      --color="var(--on-primary)"
+      on:click={() => (isModalOpen = true)}
+    />
+
+    <ProductMenu
+      isOpen={isModalOpen}
+      on:close={() => (isModalOpen = false)}
+      on:selectProduct={handleProductSelect}
+      on:clearSelection={() => console.log("Selection cleared")}
+    />
+
     <ToggleSwitch
       checked={isPeriodicSampling}
       onChange={onToggleChange}

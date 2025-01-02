@@ -2,6 +2,16 @@
   export let checked = false;
   export let onChange = () => {};
   export let disabled = false;
+  export let leftText = "Manual";
+  export let rightText = "Periodic";
+  export let width = "100px"; // Exported width
+
+  // Calculate the knob's transform distance based on width
+  let knobTransformChecked;
+  let knobTransformUnchecked = "0px";
+
+  // Update `knobTransformChecked` whenever `width` changes
+  $: knobTransformChecked = `calc(${width} - 40px)`; // 32px (knob size) + 4px (padding)
 
   // Handle the change event
   const handleChange = () => {
@@ -15,14 +25,21 @@
   <label>
     <input
       type="checkbox"
-      title="Sampling Method"
+      title="Toggle Switch"
       bind:checked
       on:change={handleChange}
       {disabled}
     />
-    <span class="slider">
-      <span class="option left">Manual</span>
-      <span class="option right">Periodic</span>
+    <span
+      class="slider"
+      style="width: {width};"
+    >
+      <span
+        class="knob"
+        style="transform: translateX({checked ? knobTransformChecked : knobTransformUnchecked});"
+      ></span>
+      <span class="option left">{leftText}</span>
+      <span class="option right">{rightText}</span>
     </span>
   </label>
 </div>
@@ -46,15 +63,13 @@
 
   .slider {
     position: relative;
-    width: 100px;
-    height: 40px;
+    height: 40px; /* Fixed height */
     background-color: #aaa;
     border-radius: 40px;
     transition: background-color 0.3s;
   }
 
-  .slider:before {
-    content: "";
+  .knob {
     position: absolute;
     left: 4px;
     top: 4px;
@@ -72,22 +87,19 @@
     font-size: 14px;
     font-weight: bold;
     color: white;
+    white-space: nowrap;
   }
 
   .left {
-    left: 40px;
+    right: 4px;
   }
 
   .right {
-    right: 40px;
+    left: 4px;
   }
 
   input:checked + .slider {
     background-color: var(--primary);
-  }
-
-  input:checked + .slider:before {
-    transform: translateX(60px);
   }
 
   /* Hide text options when checked */
@@ -113,22 +125,7 @@
     cursor: not-allowed; /* Indicate that it is not clickable */
   }
 
-  input:disabled + .slider:before {
+  input:disabled + .slider .knob {
     background-color: #999; /* Darker grey for the knob */
-    transform: translateX(
-      var(--knob-position)
-    ); /* Keep the knob in its initial position */
-  }
-
-  input:disabled + .slider .left,
-  input:disabled + .slider .right {
-    color: #aaa; /* Light grey text */
-  }
-
-  input:checked:disabled + .slider:before {
-    transform: translateX(60px); /* Fixed position if checked */
-  }
-  input:not(:checked):disabled + .slider:before {
-    transform: translateX(0); /* Fixed position if unchecked */
   }
 </style>
