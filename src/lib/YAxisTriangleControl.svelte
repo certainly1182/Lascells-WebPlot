@@ -22,18 +22,35 @@
     }
     dispatch("valueChange", value);
   }
+
+  function handleWheel(event) {
+    event.preventDefault(); // Prevent default scroll behavior
+    const step = 0.1; // Define the step size for scrolling
+    value = parseFloat(value) || 0; // Ensure value is a number
+    value += event.deltaY < 0 ? step : -step; // Increment or decrement value
+    value = parseFloat(value.toFixed(1)); // Ensure one decimal place
+    dispatch("valueChange", value); // Dispatch the updated value
+  }
+
+  function autoscaleYAxis() {
+    dispatch("autoscaleYAxis");
+  }
 </script>
 
 <div class="y-axis-triangle-control">
   <input
     type="number"
     value={displayValue}
+    title={type === "max" ? "Max" : "Min"}
     on:input={handleInput}
+    on:wheel={handleWheel}
     placeholder={type === "max" ? "Max" : "Min"}
     class="y-axis-input {valid ? '' : 'invalid'}"
   />
   <FontAwesomeIcon
     icon={faForwardStep}
+    title="Autoscale Y-Axis"
+    on:click={autoscaleYAxis}
     style="transform: rotate({type === 'max' ? 270 : 90}deg);"
   />
 </div>

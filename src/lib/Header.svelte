@@ -6,6 +6,7 @@
   import ProductMenu from "./ProductMenu.svelte";
   import { parsePeriodString } from "../js/utils";
   import { sendSerialCommand } from "../js/serial";
+  import { productStore } from "../js/store";
 
   export let connected;
   export let started;
@@ -30,12 +31,16 @@
     // Handle the selected product
     console.log("Selected product:", selectedProduct);
   }
-  $: selectProductText = "Select Product";
+
+  let selectedProductName;
+  productStore.subscribe(value => {
+    selectedProductName = value.name || 'Select Product';
+  })
+
   $: startButtonText = !started ? "Start" : "Stop";
   $: startButtonColour = !started ? "green" : "red";
   function onStart() {
     dispatch("start");
-    sendSerialCommand(">1A");
   }
 
   function onConnect() {
@@ -67,15 +72,18 @@
 </script>
 
 <div id="header">
-  <img src="logo.svg" id="logo" alt="logo" />
+  <img src="logo.svg" id="logo" alt="logo" style="width: auto; height: 40px; color: red;"/>
 
   <div id="container-right">
-    <Button
-      bind:name={selectProductText}
-      --background-color="var(--primary)"
-      --color="var(--on-primary)"
+    <button
+      class="product-dropdown"
       on:click={() => (isModalOpen = true)}
-    />
+      aria-haspopup="true"
+      aria-expanded={isModalOpen}
+    >
+      <span class="product-name">{selectedProductName}</span>
+      <span class="dropdown-arrow">▼</span>
+    </button>
 
     <ProductMenu
       isOpen={isModalOpen}
@@ -153,5 +161,34 @@
     display: flex;
     align-items: center;
     gap: 1rem;
+  }
+
+  .product-dropdown {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 120px;
+    height: 40px;
+    padding: 0 15px;
+    background-color: white;
+    color: black;
+    border: 2px solid var(--tertiary);
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 16px;
+    min-width: 180px;
+    justify-content: space-between;
+    transition: background-color 0.2s;
+  }
+
+  .product-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 150px;
+  }
+
+  .dropdown-arrow {
+    font-size: 0.8rem;
   }
 </style>

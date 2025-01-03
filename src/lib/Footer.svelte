@@ -44,7 +44,7 @@
     height: 4rem; /* Fixed footer height */
     padding: 1rem;
     background-color: #333;
-    color: white;
+    color: #777;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -69,7 +69,7 @@
 
   .footer-right a {
     display: inline-block;
-    color: #fff;
+    color: #777;
   }
 
   .footer-right a:hover {

@@ -1,6 +1,7 @@
 <script>
   import { createEventDispatcher } from "svelte";
   const dispatch = createEventDispatcher();
+  import { productStore } from "../js/store";
 
   import ToggleSwitch from "./ToggleSwitch.svelte";
 
@@ -72,11 +73,21 @@
 
   function clearSelection() {
     selectedProduct = null;
+    productStore.set({ name: null, scale: 1, unit: 'Volts (V)' });
     dispatch("clearSelection");
   }
 
   function selectProduct(product) {
     selectedProduct = product;
+
+    productStore.set({
+      name: product.name,
+      scale: product.hasSettings 
+        ? product.settings.scales[product.settings.highSensitivity ? "high" : "low"]
+        : product.scale,
+      unit: product.unit
+    });
+
     dispatch("selectProduct", {
       product: {
         ...product,

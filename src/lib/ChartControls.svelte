@@ -6,10 +6,6 @@
 
   const dispatch = createEventDispatcher();
 
-  function handleAutoscale() {
-    dispatch("autoscale");
-  }
-
   function handleExport() {
     exportFullDataToCSV();
   }
@@ -17,9 +13,6 @@
 
 <div class="chart-controls">
   <button class="export-button" on:click={handleExport}> Export to CSV </button>
-  <button class="autoscale-button" on:click={handleAutoscale}>
-    Autoscale Y-Axis
-  </button>
 </div>
 
 <style>
@@ -31,7 +24,7 @@
     z-index: 10;
   }
 
-  .autoscale-button, .export-button {
+  .export-button {
     padding: 0.5rem;
     height: 2rem;
     background-color: #26488b;
@@ -42,7 +35,7 @@
     transition: background-color 0.3s ease;
   }
 
-  .autoscale-button:hover, .export-button:hover {
+  .export-button:hover {
     background-color: #1e3a6d;
   }
 </style>

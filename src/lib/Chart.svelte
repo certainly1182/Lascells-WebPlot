@@ -2,7 +2,7 @@
 
 <script>
   import { onMount } from "svelte";
-  import { serialLineStore, fullDataStore } from "../js/store";
+  import { serialLineStore, fullDataStore, productStore, transformVoltageData } from "../js/store";
   import uPlot from "uplot";
   import "uplot/dist/uPlot.min.css";
   import ChartControls from "./ChartControls.svelte";
@@ -10,6 +10,14 @@
   import YAxisTriangleControl from "./YAxisTriangleControl.svelte";
 
   let chart;
+  let currentProduct;
+  productStore.subscribe(value => {
+    currentProduct = value;
+    if (chart) {
+      chart.axes[1].label = `${currentProduct.unit}`;
+      chart.redraw();
+    }
+  });
   export let isPeriodicSampling;
   let xAxisLabel;
   $: {
@@ -78,7 +86,8 @@
       return;
     }
 
-    const data = parseLine(line);
+    const transformedLine = transformVoltageData(line, currentProduct.scale);
+    const data = parseLine(transformedLine);
     addChartData(data);
 
     chart.setData(chartData);
@@ -134,7 +143,7 @@
           },
         },
         {
-          label: "Voltage (V)",
+          label: currentProduct?.unit || 'Voltage (V)',
           stroke: "#000",
           ticks: {
             width: 0.2,
