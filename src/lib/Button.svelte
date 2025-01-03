@@ -1,8 +1,13 @@
 <script>
   export let name;
+  export let icon;
+  export let title;
 </script>
 
-<button on:click>{name}</button>
+<button on:click title={title}>
+  {name}
+  <i class="fa fa-{icon}"></i>
+</button>
 
 <style>
   button {
