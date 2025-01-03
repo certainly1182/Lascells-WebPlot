@@ -76,7 +76,7 @@
 </script>
 
 <div id="header">
-  <img src="logo.svg" id="logo" alt="logo" style="width: auto; height: 40px; color: red;"/>
+  <img src="lascells_Logo_Blue.png" id="logo" alt="logo" loading="lazy" style="width: auto; height: 50px;"/>
 
   <div id="container-right">
     <button

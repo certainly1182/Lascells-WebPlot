@@ -20,13 +20,6 @@ export default defineConfig({
               "short_name": "WebPlot",
               "start_url": "/Lascells-WebPlot/",
               "display": "standalone",
-              "icons": [
-                {
-                  "src": "icon512.png",
-                  "sizes": "512x512",
-                  "type": "image/png",
-                }
-              ]
             }
           })
   ]

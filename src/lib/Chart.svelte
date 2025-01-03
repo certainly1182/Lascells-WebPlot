@@ -6,6 +6,7 @@
   import uPlot from "uplot";
   import "uplot/dist/uPlot.min.css";
   import ChartControls from "./ChartControls.svelte";
+  import PanelMeter from "./PanelMeter.svelte";
   import { createSineWaveData } from "../js/utils";
   import YAxisTriangleControl from "./YAxisTriangleControl.svelte";
 
@@ -363,6 +364,9 @@
 </script>
 
 <div id="chart-container" bind:this={chartContainer}>
+  <div style="position: fixed; top: 4rem; right: 1px; z-index: 15;">
+    <PanelMeter value={123.456} unit="V" />
+  </div>
   <div style="position: fixed; top: 4rem; left: 1px; z-index: 15;">
     <YAxisTriangleControl
       type="max"

@@ -91,6 +91,7 @@
   }
 
   import { onMount, onDestroy } from 'svelte';
+  import PanelMeter from "./lib/PanelMeter.svelte";
 
   onMount(() => {
     window.addEventListener('keydown', handleSpacebar);
