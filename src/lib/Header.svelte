@@ -4,7 +4,6 @@
   import SelectMenu from "./SelectMenu.svelte";
   import ToggleSwitch from "./ToggleSwitch.svelte";
   import ProductMenu from "./ProductMenu.svelte";
-  import ProductDropdown from "./ProductDropdown.svelte";
   import { parsePeriodString } from "../js/utils";
   import { productStore } from "../js/store";
 
@@ -33,9 +32,9 @@
   }
 
   let selectedProductName;
-  productStore.subscribe((value) => {
-    selectedProductName = value.name || "Select Product";
-  });
+  productStore.subscribe(value => {
+    selectedProductName = value.name || 'Select Product';
+  })
 
   $: startButtonIcon = started ? "stop" : "play";
   $: startButtonColour = !started ? "green" : "red";
@@ -53,8 +52,8 @@
   let connectButtonTitle;
   $: if ("serial" in navigator) {
     connectButtonText = !connected ? "Connect" : "Disconnect";
-    connectButtonIcon = !connected ? "plug-circle-plus" : "plug-circle-xmark";
-    connectButtonTitle = !connected ? "Connect" : "Disconnect";
+    connectButtonIcon = !connected ? "plug-circle-plus" : "plug-circle-xmark"
+    connectButtonTitle = !connected ? "Connect" : "Disconnect"
   } else {
     connectButtonText = "Browser doesn't support WebSerial";
   }
@@ -77,22 +76,22 @@
 </script>
 
 <div id="header">
-  <img
-    src="logo.svg"
-    id="logo"
-    alt="logo"
-    style="width: auto; height: 40px; color: red;"
-  />
+  <img src="logo.svg" id="logo" alt="logo" style="width: auto; height: 40px; color: red;"/>
 
   <div id="container-right">
-    <ProductDropdown
-      on:click={() => (isModalOpen = !isModalOpen)}
-      {selectedProductName}
-      {started}
-      disabled={false}
-    />
+    <button
+      class="product-dropdown"
+      on:click={() => (isModalOpen = true)}
+      aria-haspopup="true"
+      aria-expanded={isModalOpen}
+      disabled={started}
+    >
+      <span class="product-name">{selectedProductName}</span>
+      <span class="dropdown-arrow">▼</span>
+    </button>
 
     <ProductMenu
+      isOpen={isModalOpen}
       on:close={() => (isModalOpen = false)}
       on:selectProduct={handleProductSelect}
       on:clearSelection={() => console.log("Selection cleared")}
@@ -138,6 +137,7 @@
         on:click={onStart}
       />
     {/if}
+  
 
     <Button
       icon={connectButtonIcon}
@@ -169,5 +169,34 @@
     display: flex;
     align-items: center;
     gap: 1rem;
+  }
+
+  .product-dropdown {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 120px;
+    height: 40px;
+    padding: 0 15px;
+    background-color: white;
+    color: black;
+    border: 2px solid var(--tertiary);
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 16px;
+    min-width: 180px;
+    justify-content: space-between;
+    transition: background-color 0.2s;
+  }
+
+  .product-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 150px;
+  }
+
+  .dropdown-arrow {
+    font-size: 0.8rem;
   }
 </style>
