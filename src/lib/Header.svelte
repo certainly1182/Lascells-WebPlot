@@ -5,7 +5,7 @@
   import ToggleSwitch from "./ToggleSwitch.svelte";
   import ProductMenu from "./ProductMenu.svelte";
   import { parsePeriodString } from "../js/utils";
-  import { productStore } from "../js/store";
+  import { productStore, isPeriodicSamplingStore } from "../js/store";
 
   export let connected;
   export let started;
@@ -59,11 +59,14 @@
   }
 
   // Variable to control sampling mode
-  export let isPeriodicSampling = true;
+  let isPeriodicSampling;
+  isPeriodicSamplingStore.subscribe(value => {
+    isPeriodicSampling = value;
+  });
 
   // Handle toggle change
   function onToggleChange(checked) {
-    isPeriodicSampling = checked;
+    isPeriodicSamplingStore.set(checked);
   }
 
   function samplingPeriodChange(event) {

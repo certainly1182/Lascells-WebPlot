@@ -9,7 +9,7 @@
     sendConfigCommand,
     sendSerialCommand
   } from "./js/serial";
-  import { serialLineStore } from "./js/store.js";
+  import { serialLineStore, isPeriodicSamplingStore } from "./js/store.js";
 
   import Header from "./lib/Header.svelte";
   import Chart from "./lib/Chart.svelte";
@@ -50,6 +50,9 @@
   let chartRef;
 
   let isPeriodicSampling = true;
+  isPeriodicSamplingStore.subscribe(value => {
+    isPeriodicSampling = value;
+  });
 
   function clearChart() {
     chartRef.clearChartData();
@@ -124,7 +127,6 @@
     bind:defaultVoltage
     on:start={onStart}
     on:connect={onConnect}
-    bind:isPeriodicSampling
   />
 
   <main>

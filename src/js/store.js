@@ -23,3 +23,5 @@ export function transformVoltageData(voltageData, scale = 1) {
 
   return transformedValues.join(",");
 }
+
+export const isPeriodicSamplingStore = writable(true);

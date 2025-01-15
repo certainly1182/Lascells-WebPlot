@@ -1,12 +1,16 @@
-import { serialLineStore, fullDataStore } from "./store.js";
+import { serialLineStore, fullDataStore, isPeriodicSamplingStore } from "./store.js";
 import { parsePeriodString } from "./utils.js";
-import isPeriodicSampling from "../App.svelte"
 
 let port;
 let reader;
 const decoder = new TextDecoder();
 
 let run = false;
+
+let isPeriodicSampling = true;
+isPeriodicSamplingStore.subscribe(value => {
+  isPeriodicSampling = value;
+});
 
 export async function serialConnect(baudrate) {
   try {
@@ -53,7 +57,6 @@ export async function serialStart() {
 
     for (const char of data) {
       if (char === "\n") {
-        line = line.replace(/[\r\n]+/gm, "");
         
         const serialLine = isPeriodicSampling 
           ? `${((performance.now() - startTime) / 1000).toFixed(3)}, ${line}`

@@ -56,7 +56,7 @@
 <style>
   .panel {
     position: absolute;
-    z-index: 9999;
+    z-index: 900;
     user-select: none;
     cursor: move;
     display: flex;
@@ -66,6 +66,7 @@
     border-radius: 0.5rem;
     border: 4px solid #777777;
     box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+    white-space: nowrap;
   }
 
   .digits {
