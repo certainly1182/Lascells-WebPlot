@@ -2,9 +2,19 @@
   export let name;
   export let icon;
   export let title;
+
+    function handleKeydown(event) {
+    if (event.code === 'Space') {
+      event.preventDefault();
+    }
+  }
 </script>
 
-<button on:click title={title}>
+<button
+  on:click
+  title={title}
+  on:keydown={handleKeydown}
+>
   {name}
   <i class="fa fa-{icon}"></i>
 </button>

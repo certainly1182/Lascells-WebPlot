@@ -1,5 +1,4 @@
 <!-- App.svelte -->
-
 <script>
   import {
     serialConnect,
@@ -7,12 +6,13 @@
     serialStart,
     serialStop,
     sendConfigCommand,
-    sendSerialCommand
+    sendSerialCommand,
   } from "./js/serial";
   import { serialLineStore, isPeriodicSamplingStore } from "./js/store.js";
 
   import Header from "./lib/Header.svelte";
   import Chart from "./lib/Chart.svelte";
+  import NumericDisplay from "./lib/NumericDisplay.svelte";
   import Footer from "./lib/Footer.svelte";
 
   let pointsOptions = [10, 20, 50, 100, 500, 1000, 5000, 10000];
@@ -50,9 +50,14 @@
   let chartRef;
 
   let isPeriodicSampling = true;
-  isPeriodicSamplingStore.subscribe(value => {
+  isPeriodicSamplingStore.subscribe((value) => {
     isPeriodicSampling = value;
   });
+
+  let displayMode = "Chart";
+  function handleDisplayModeChange(event) {
+    displayMode = event.detail.mode;
+  }
 
   function clearChart() {
     chartRef.clearChartData();
@@ -93,22 +98,22 @@
     !connected ? connect() : disconnect();
   }
 
-  import { onMount, onDestroy } from 'svelte';
+  import { onMount, onDestroy } from "svelte";
   import PanelMeter from "./lib/PanelMeter.svelte";
 
   onMount(() => {
-    window.addEventListener('keydown', handleSpacebar);
+    window.addEventListener("keydown", handleSpacebar);
   });
 
   onDestroy(() => {
-    window.removeEventListener('keydown', handleSpacebar);
+    window.removeEventListener("keydown", handleSpacebar);
   });
 
   function handleSpacebar(event) {
-    if(!connected) return;
+    if (!connected) return;
     if (isPeriodicSampling) return;
-    if (event.code !== 'Space') return;
-    sendSerialCommand('#');
+    if (event.code !== "Space") return;
+    sendSerialCommand("#");
   }
 </script>
 
@@ -127,10 +132,20 @@
     bind:defaultVoltage
     on:start={onStart}
     on:connect={onConnect}
+    on:displayModeChange={handleDisplayModeChange}
   />
 
   <main>
-    <Chart bind:numPoints bind:this={chartRef} bind:isPeriodicSampling/>
+    {#if displayMode === "Chart"}
+      <Chart
+        bind:numPoints
+        bind:this={chartRef}
+        bind:isPeriodicSampling
+        {displayMode}
+      />
+    {:else}
+      <NumericDisplay />
+    {/if}
   </main>
 
   <Footer />

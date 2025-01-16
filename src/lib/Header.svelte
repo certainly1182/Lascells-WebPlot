@@ -22,6 +22,9 @@
   export let voltageString;
   export let defaultVoltage;
 
+  const displayModeOptions = ["Graph", "Numeric"];
+  export let displayMode = displayModeOptions[0];
+
   const dispatch = createEventDispatcher();
 
   let isModalOpen = false;
@@ -45,6 +48,11 @@
 
   function onConnect() {
     dispatch("connect");
+  }
+
+  function onDisplayModeChange(event) {
+    displayMode = event.detail.selected;
+    dispatch("displayModeChange", { mode: displayMode });
   }
 
   let connectButtonText;
@@ -82,6 +90,12 @@
   <img src="lascells_Logo_Blue.png" id="logo" alt="logo" loading="lazy" style="width: auto; height: 50px;"/>
 
   <div id="container-right">
+    <SelectMenu
+      tooltip="Display Mode"
+      bind:selectedOption={displayMode}
+      options={displayModeOptions}
+      on:change={onDisplayModeChange}
+    />
     <button
       class="product-dropdown"
       on:click={() => (isModalOpen = true)}

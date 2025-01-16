@@ -57,6 +57,7 @@ export async function serialStart() {
 
     for (const char of data) {
       if (char === "\n") {
+        line = line.replace(/\r\n/g, "\n");
         
         const serialLine = isPeriodicSampling 
           ? `${((performance.now() - startTime) / 1000).toFixed(3)}, ${line}`

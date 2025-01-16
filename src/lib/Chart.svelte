@@ -2,7 +2,12 @@
 
 <script>
   import { onMount } from "svelte";
-  import { serialLineStore, fullDataStore, productStore, transformVoltageData } from "../js/store";
+  import {
+    serialLineStore,
+    fullDataStore,
+    productStore,
+    transformVoltageData,
+  } from "../js/store";
   import uPlot from "uplot";
   import "uplot/dist/uPlot.min.css";
   import ChartControls from "./ChartControls.svelte";
@@ -12,7 +17,7 @@
 
   let chart;
   let currentProduct;
-  productStore.subscribe(value => {
+  productStore.subscribe((value) => {
     currentProduct = value;
     if (chart) {
       chart.axes[1].label = `${currentProduct.unit}`;
@@ -144,7 +149,7 @@
           },
         },
         {
-          label: currentProduct?.unit || 'Voltage (V)',
+          label: currentProduct?.unit || "Voltage (V)",
           stroke: "#000",
           ticks: {
             width: 0.2,
@@ -351,38 +356,34 @@
 
   onMount(() => {
     chart = createChart();
-
     window.addEventListener("resize", () => {
       chart.setSize(getSize());
     });
-
     chart.setSize(getSize());
-
     chart.setData(chartData);
     autoscaleYAxis();
   });
 </script>
 
-<div id="chart-container" bind:this={chartContainer}>
-  <div style="position: fixed; top: 4rem; right: 1px; z-index: 15;">
-    <PanelMeter value={123.456} unit="V" />
-  </div>
-  <div style="position: fixed; top: 4rem; left: 1px; z-index: 15;">
-    <YAxisTriangleControl
-      type="max"
-      bind:value={manualYScale.max}
-      on:valueChange={handleMaxChange}
-      valid={isMaxValid}
-    />
-  </div>
-  <ChartControls on:autoscale={autoscaleYAxis} />
-  <div style="position: fixed; bottom: 5rem; left: 1px; z-index: 15;">
-    <YAxisTriangleControl
-      type="min"
-      bind:value={manualYScale.min}
-      on:valueChange={handleMinChange}
-      valid={isMinValid}
-    />
+<div id="chart-container">
+  <div bind:this={chartContainer}>
+    <div style="position: fixed; top: 4rem; left: 1px; z-index: 15;">
+      <YAxisTriangleControl
+        type="max"
+        bind:value={manualYScale.max}
+        on:valueChange={handleMaxChange}
+        valid={isMaxValid}
+      />
+    </div>
+    <ChartControls on:autoscale={autoscaleYAxis} />
+    <div style="position: fixed; bottom: 5rem; left: 1px; z-index: 15;">
+      <YAxisTriangleControl
+        type="min"
+        bind:value={manualYScale.min}
+        on:valueChange={handleMinChange}
+        valid={isMinValid}
+      />
+    </div>
   </div>
 </div>
 
@@ -390,7 +391,7 @@
   #chart-container {
     position: relative;
     width: 100%;
-    height: (100% - 8rem);
+    height: calc(100vh - 8rem);
     padding-top: 1rem;
   }
 </style>
