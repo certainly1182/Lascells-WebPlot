@@ -6,6 +6,7 @@
   import ProductMenu from "./ProductMenu.svelte";
   import { parsePeriodString } from "../js/utils";
   import { productStore, isPeriodicSamplingStore } from "../js/store";
+  import { sendSerialCommand } from "../js/serial";
 
   export let connected;
   export let started;
@@ -87,120 +88,152 @@
 </script>
 
 <div id="header">
-  <img
-    src="lascells_Logo_Blue.png"
-    id="logo"
-    alt="logo"
-    loading="lazy"
-    style="width: auto; height: 50px;"
-  />
-
-  <div id="container-right">
-    <SelectMenu
-      tooltip="Display Mode"
-      bind:selectedOption={displayMode}
-      options={displayModeOptions}
-      on:change={onDisplayModeChange}
-    />
-    <button
-      class="product-dropdown"
-      on:click={() => (isModalOpen = true)}
-      aria-haspopup="true"
-      aria-expanded={isModalOpen}
-      disabled={started}
-    >
-      <span class="product-name">{selectedProductName}</span>
-      <span class="dropdown-arrow">▼</span>
-    </button>
-
-    <ProductMenu
-      isOpen={isModalOpen}
-      on:close={() => (isModalOpen = false)}
-      on:selectProduct={handleProductSelect}
-      on:clearSelection={() => console.log("Selection cleared")}
+  <div class="header-row top-row">
+    <img
+      src="lascells_Logo_Blue.png"
+      id="logo"
+      alt="logo"
+      loading="lazy"
     />
 
-    <ToggleSwitch
-      checked={isPeriodicSampling}
-      onChange={onToggleChange}
-      disabled={started}
-    />
-    {#if isPeriodicSampling}
+    <div class="primary-controls">
       <SelectMenu
-        tooltip="Sampling Period"
-        bind:selectedOption={periodString}
-        options={periodOptions}
-        defaultOption={defaultPeriod}
-        on:change={samplingPeriodChange}
+        tooltip="Display Mode"
+        bind:selectedOption={displayMode}
+        options={displayModeOptions}
+        on:change={onDisplayModeChange}
+      />
+      <button
+        class="product-dropdown"
+        on:click={() => (isModalOpen = true)}
+        aria-haspopup="true"
+        aria-expanded={isModalOpen}
+        disabled={started}
+      >
+        <span class="product-name">{selectedProductName}</span>
+        <span class="dropdown-arrow">▼</span>
+      </button>
+
+      <ProductMenu
+        isOpen={isModalOpen}
+        on:close={() => (isModalOpen = false)}
+        on:selectProduct={handleProductSelect}
+        on:clearSelection={() => console.log("Selection cleared")}
+      />
+
+      <ToggleSwitch
+        checked={isPeriodicSampling}
+        onChange={onToggleChange}
         disabled={started}
       />
-    {/if}
 
-    <SelectMenu
-      tooltip="Voltage Range"
-      bind:selectedOption={voltageString}
-      options={voltageOptions}
-      defaultOption={defaultVoltage}
-      on:change={voltageRangeChange}
-      disabled={started}
-    />
-
-    {#if displayMode === "Graph"}
-      <SelectMenu
-        tooltip="Points"
-        bind:selectedOption={numPoints}
-        options={pointsOptions}
-        defaultOption={defaultPoints}
-      />
-    {/if}
-
-    {#if connected}
       <Button
         icon={startButtonIcon}
         title={startButtonTitle}
         --background-color={startButtonColour}
         --color="white"
         on:click={onStart}
+        disabled={!connected}
       />
-    {/if}
 
-    <Button
-      icon={connectButtonIcon}
-      title={connectButtonTitle}
-      --background-color="var(--primary)"
-      --color="var(--on-primary)"
-      on:click={onConnect}
-    />
+      <Button
+        icon={connectButtonIcon}
+        title={connectButtonTitle}
+        --background-color="var(--primary)"
+        --color="var(--on-primary)"
+        on:click={onConnect}
+      />
+    </div>
+  </div>
+
+  <div class="header-row bottom-row">
+    <div class="secondary-controls">
+      <div class="sampling-controls">
+        {#if isPeriodicSampling}
+          <SelectMenu
+            tooltip="Sampling Period"
+            bind:selectedOption={periodString}
+            options={periodOptions}
+            defaultOption={defaultPeriod}
+            on:change={samplingPeriodChange}
+            disabled={started}
+          />
+        {:else}
+          <Button
+          name="Take Sample"
+          title="Spacebar also Samples"
+          --background-color="var(--primary)"
+          --color="var(--on-primary)"
+          on:click={() => sendSerialCommand("#") }
+          disabled={!connected}
+          />
+        {/if}
+      </div>
+
+      <SelectMenu
+        tooltip="Voltage Range"
+        bind:selectedOption={voltageString}
+        options={voltageOptions}
+        defaultOption={defaultVoltage}
+        on:change={voltageRangeChange}
+        disabled={started}
+      />
+
+      {#if displayMode === "Graph"}
+        <SelectMenu
+          tooltip="Points"
+          bind:selectedOption={numPoints}
+          options={pointsOptions}
+          defaultOption={defaultPoints}
+        />
+      {/if}
+    </div>
   </div>
 </div>
 
 <style>
   #header {
     background-color: var(--background-secondary);
-    gap: 20px;
-
-    height: 4rem; /* Fixed footer height */
-    padding: 1rem;
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+  }
+
+  .header-row {
+    padding: 0.2rem;
+    display: flex;
     align-items: center;
+  }
+
+  .top-row {
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .bottom-row {
+    justify-content: flex-end;
   }
 
   #logo {
-    height: 3rem;
+    height: 2.5rem;
+    width: auto;
   }
 
-  #container-right {
+  .primary-controls, .secondary-controls {
     display: flex;
     align-items: center;
     gap: 1rem;
+  }
+
+  .sampling-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
   }
 
   .product-dropdown {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    width: 120px;
     height: 40px;
     padding: 0 15px;
     background-color: white;

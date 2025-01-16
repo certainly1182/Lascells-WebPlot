@@ -373,15 +373,17 @@
         bind:value={manualYScale.max}
         on:valueChange={handleMaxChange}
         valid={isMaxValid}
+        on:autoscaleYAxis={autoscaleYAxis}
       />
     </div>
-    <ChartControls on:autoscale={autoscaleYAxis} />
+    <!-- <ChartControls on:autoscale={autoscaleYAxis} /> -->
     <div style="position: fixed; bottom: 5rem; left: 1px; z-index: 15;">
       <YAxisTriangleControl
         type="min"
         bind:value={manualYScale.min}
         on:valueChange={handleMinChange}
         valid={isMinValid}
+        on:autoscaleYAxis={autoscaleYAxis}
       />
     </div>
   </div>

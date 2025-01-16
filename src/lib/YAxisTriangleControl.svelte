@@ -47,12 +47,19 @@
     placeholder={type === "max" ? "Max" : "Min"}
     class="y-axis-input {valid ? '' : 'invalid'}"
   />
-  <FontAwesomeIcon
-    icon={faForwardStep}
-    title="Autoscale Y-Axis"
+  <div
     on:click={autoscaleYAxis}
-    style="transform: rotate({type === 'max' ? 270 : 90}deg);"
-  />
+    role="button"
+    tabindex="0"
+    on:keydown={(e) => e.key === 'Enter' && autoscaleYAxis()}
+  >
+    <FontAwesomeIcon
+      icon={faForwardStep}
+      title="Autoscale Y-Axis"
+      on:click={autoscaleYAxis}
+      style="transform: rotate({type === 'max' ? 270 : 90}deg);"
+    />
+  </div>
 </div>
 
 <style>
