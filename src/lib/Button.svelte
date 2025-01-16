@@ -3,7 +3,7 @@
   export let icon;
   export let title;
 
-    function handleKeydown(event) {
+  function handleKeydown(event) {
     if (event.code === 'Space') {
       event.preventDefault();
     }

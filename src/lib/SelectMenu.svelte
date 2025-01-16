@@ -32,6 +32,12 @@
 
     open = false;
   }
+
+  function handleKeydown(event) {
+    if (event.code === 'Space') {
+      event.preventDefault();
+    }
+  }
 </script>
 
 <div class="menu-wrapper" on:focusout={focusOut}>
@@ -43,7 +49,7 @@
     readonly
     {disabled}
   />
-  <button class="menu-button" on:click={toggleMenu} {disabled}>▼</button>
+  <button class="menu-button" on:click={toggleMenu} {disabled} on:keydown={handleKeydown}>▼</button>
 
   <div class="menu-options">
     {#if open}

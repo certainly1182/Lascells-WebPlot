@@ -35,9 +35,9 @@
   }
 
   let selectedProductName;
-  productStore.subscribe(value => {
-    selectedProductName = value.name || 'Select Product';
-  })
+  productStore.subscribe((value) => {
+    selectedProductName = value.name || "Select Product";
+  });
 
   $: startButtonIcon = started ? "stop" : "play";
   $: startButtonColour = !started ? "green" : "red";
@@ -60,15 +60,15 @@
   let connectButtonTitle;
   $: if ("serial" in navigator) {
     connectButtonText = !connected ? "Connect" : "Disconnect";
-    connectButtonIcon = !connected ? "plug-circle-plus" : "plug-circle-xmark"
-    connectButtonTitle = !connected ? "Connect" : "Disconnect"
+    connectButtonIcon = !connected ? "plug-circle-plus" : "plug-circle-xmark";
+    connectButtonTitle = !connected ? "Connect" : "Disconnect";
   } else {
     connectButtonText = "Browser doesn't support WebSerial";
   }
 
   // Variable to control sampling mode
   let isPeriodicSampling;
-  isPeriodicSamplingStore.subscribe(value => {
+  isPeriodicSamplingStore.subscribe((value) => {
     isPeriodicSampling = value;
   });
 
@@ -87,7 +87,13 @@
 </script>
 
 <div id="header">
-  <img src="lascells_Logo_Blue.png" id="logo" alt="logo" loading="lazy" style="width: auto; height: 50px;"/>
+  <img
+    src="lascells_Logo_Blue.png"
+    id="logo"
+    alt="logo"
+    loading="lazy"
+    style="width: auto; height: 50px;"
+  />
 
   <div id="container-right">
     <SelectMenu
@@ -119,15 +125,16 @@
       onChange={onToggleChange}
       disabled={started}
     />
-
-    <SelectMenu
-      tooltip="Sampling Period"
-      bind:selectedOption={periodString}
-      options={periodOptions}
-      defaultOption={defaultPeriod}
-      on:change={samplingPeriodChange}
-      disabled={started}
-    />
+    {#if isPeriodicSampling}
+      <SelectMenu
+        tooltip="Sampling Period"
+        bind:selectedOption={periodString}
+        options={periodOptions}
+        defaultOption={defaultPeriod}
+        on:change={samplingPeriodChange}
+        disabled={started}
+      />
+    {/if}
 
     <SelectMenu
       tooltip="Voltage Range"
@@ -138,12 +145,14 @@
       disabled={started}
     />
 
-    <SelectMenu
-      tooltip="Points"
-      bind:selectedOption={numPoints}
-      options={pointsOptions}
-      defaultOption={defaultPoints}
-    />
+    {#if displayMode === "Graph"}
+      <SelectMenu
+        tooltip="Points"
+        bind:selectedOption={numPoints}
+        options={pointsOptions}
+        defaultOption={defaultPoints}
+      />
+    {/if}
 
     {#if connected}
       <Button
@@ -154,7 +163,6 @@
         on:click={onStart}
       />
     {/if}
-  
 
     <Button
       icon={connectButtonIcon}
