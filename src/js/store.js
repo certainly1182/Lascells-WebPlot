@@ -25,3 +25,8 @@ export function transformVoltageData(voltageData, scale = 1) {
 }
 
 export const isPeriodicSamplingStore = writable(true);
+
+export const connectionStatusStore = writable({ connected: false, error: null });
+
+export const displayModeOptions = ['Graph', 'Numeric'];
+export const displayModeStore = writable(displayModeOptions[0]);

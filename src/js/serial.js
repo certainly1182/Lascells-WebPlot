@@ -1,4 +1,9 @@
-import { serialLineStore, fullDataStore, isPeriodicSamplingStore } from "./store.js";
+import {
+  serialLineStore,
+  fullDataStore,
+  isPeriodicSamplingStore,
+  connectionStatusStore,
+} from "./store.js";
 import { parsePeriodString } from "./utils.js";
 
 let port;
@@ -8,7 +13,7 @@ const decoder = new TextDecoder();
 let run = false;
 
 let isPeriodicSampling = true;
-isPeriodicSamplingStore.subscribe(value => {
+isPeriodicSamplingStore.subscribe((value) => {
   isPeriodicSampling = value;
 });
 
@@ -19,18 +24,66 @@ export async function serialConnect(baudrate) {
     reader = port.readable.getReader();
     run = true;
     console.log("Serial port opened successfully:", port);
+    connectionStatusStore.set({ connected: true, error: null });
+    fullDataStore.set([]);
+
+    // Listen for disconnect events
+    navigator.serial.addEventListener("disconnect", (event) => {
+      if (event.target === port) {
+        handleDisconnection("Device was disconnected");
+      }
+    });
   } catch (error) {
     console.error("Error during serial connection:", error);
+    connectionStatusStore.set({
+      connected: false,
+      error: "Failed to connect to device: " + error.message,
+    });
   }
 
   fullDataStore.set([]);
 }
 
+function handleDisconnection(message) {
+  console.error(message);
+  run = false;
+  connectionStatusStore.set({ connected: false, error: message });
+
+  if (reader) {
+    try {
+      reader.releaseLock();
+    } catch (error) {
+      console.error("Error releasing reader lock:", error);
+    }
+  }
+
+  if (port) {
+    try {
+      port.close();
+    } catch (error) {
+      console.error("Error closing port:", error);
+    }
+  }
+
+  reader = null;
+  port = null;
+}
+
 export function serialDisconnect() {
-  serialStop();
-  reader.cancel();
-  reader.releaseLock();
-  port.close();
+  try {
+    serialStop();
+    if (reader) {
+      reader.cancel();
+      reader.releaseLock();
+    }
+    if (port) {
+      port.close();
+    }
+    connectionStatusStore.set({ connected: false, error: null });
+  } catch (error) {
+    console.error("Error during disconnect:", error);
+    handleDisconnection("Error during manual disconnect: " + error.message);
+  }
 }
 
 export function serialStop() {
@@ -46,36 +99,41 @@ export async function serialStart() {
   let index = 0;
 
   while (run) {
-    const { value, done } = await reader.read();
+    try {
+      const { value, done } = await reader.read();
 
-    if (done) {
-      serialDisconnect();
-      break;
-    }
-
-    const data = decoder.decode(value);
-
-    for (const char of data) {
-      if (char === "\n") {
-        line = line.replace(/\r\n/g, "\n");
-        
-        const serialLine = isPeriodicSampling 
-          ? `${((performance.now() - startTime) / 1000).toFixed(3)}, ${line}`
-          : `${index}, ${line}`;
-
-        serialLineStore.set(serialLine);
-
-        const parsedData = line.split(",").map((val) => {
-          const parsed = parseFloat(val.trim());
-          return isNaN(parsed) ? null : parsed;
-        });
-        fullDataStore.update((currentData) => [...currentData, parsedData]);
-
-        line = "";
-        index++;
-      } else {
-        line += char;
+      if (done) {
+        serialDisconnect();
+        break;
       }
+
+      const data = decoder.decode(value);
+
+      for (const char of data) {
+        if (char === "\n") {
+          line = line.replace(/\r\n/g, "\n");
+
+          const serialLine = isPeriodicSampling
+            ? `${((performance.now() - startTime) / 1000).toFixed(3)}, ${line}`
+            : `${index}, ${line}`;
+
+          serialLineStore.set(serialLine);
+
+          const parsedData = line.split(",").map((val) => {
+            const parsed = parseFloat(val.trim());
+            return isNaN(parsed) ? null : parsed;
+          });
+          fullDataStore.update((currentData) => [...currentData, parsedData]);
+
+          line = "";
+          index++;
+        } else {
+          line += char;
+        }
+      }
+    } catch (error) {
+      handleDisconnection("Lost connection to device: " + error.message);
+      break;
     }
   }
 }
@@ -96,8 +154,8 @@ export function exportFullDataToCSV() {
     csvContent = csvContent.slice(0, -1) + "\n";
 
     fullData.forEach((dataPoint, index) => {
-      csvContent += isPeriodicSampling 
-        ? `${index * 0.01},`  // TODO: use sampling period 
+      csvContent += isPeriodicSampling
+        ? `${index * 0.01},` // TODO: use sampling period
         : `${index},`;
 
       dataPoint.forEach((value) => {
@@ -121,7 +179,9 @@ export function exportFullDataToCSV() {
 
 export async function sendSerialCommand(command) {
   if (!port) {
-    console.error("Port not open!");
+    const error = "Port not open!"
+    console.error(error);
+    connectionStatusStore.set({ connected: false, error });
     return;
   }
 
@@ -136,6 +196,7 @@ export async function sendSerialCommand(command) {
     console.log(`Sent command: ${command}`);
   } catch (error) {
     console.error("Error sending command:", error);
+    handleDisconnection('Failed to send command: ' + error.message);
   } finally {
     writer.releaseLock();
   }
@@ -144,7 +205,7 @@ export async function sendSerialCommand(command) {
 export async function sendConfigCommand(periodString, voltageString) {
   try {
     const samplingCode = {
-      "Manual": ".",
+      Manual: ".",
       "1ms": "A",
       "2ms": "B",
       "5ms": "C",
@@ -160,7 +221,7 @@ export async function sendConfigCommand(periodString, voltageString) {
       "10s": "M",
       "15s": "N",
       "30s": "O",
-      "1min": "P"
+      "1min": "P",
     }[periodString];
 
     if (!samplingCode) {
@@ -168,7 +229,7 @@ export async function sendConfigCommand(periodString, voltageString) {
     }
 
     const voltageCode = {
-      "Auto": "0",
+      Auto: "0",
       "-1 to +1V": "1",
       "-5 to +5V": "2",
       "-50 to +50V": "3",

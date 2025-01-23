@@ -5,7 +5,7 @@
   import ToggleSwitch from "./ToggleSwitch.svelte";
   import ProductMenu from "./ProductMenu.svelte";
   import { parsePeriodString } from "../js/utils";
-  import { productStore, isPeriodicSamplingStore } from "../js/store";
+  import { productStore, isPeriodicSamplingStore, displayModeStore } from "../js/store";
   import { sendSerialCommand } from "../js/serial";
 
   export let connected;
@@ -23,8 +23,8 @@
   export let voltageString;
   export let defaultVoltage;
 
-  const displayModeOptions = ["Graph", "Numeric"];
-  export let displayMode = displayModeOptions[0];
+  const displayModeOptions = ['Graph', 'Numeric'];
+  let displayMode = displayModeOptions[0];
 
   const dispatch = createEventDispatcher();
 
@@ -53,7 +53,7 @@
 
   function onDisplayModeChange(event) {
     displayMode = event.detail.selected;
-    dispatch("displayModeChange", { mode: displayMode });
+    displayModeStore.set(displayMode);
   }
 
   let connectButtonText;

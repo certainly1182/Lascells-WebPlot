@@ -8,7 +8,7 @@
     sendConfigCommand,
     sendSerialCommand,
   } from "./js/serial";
-  import { serialLineStore, isPeriodicSamplingStore } from "./js/store.js";
+  import { serialLineStore, isPeriodicSamplingStore, displayModeStore } from "./js/store.js";
 
   import Header from "./lib/Header.svelte";
   import Chart from "./lib/Chart.svelte";
@@ -54,10 +54,10 @@
     isPeriodicSampling = value;
   });
 
-  let displayMode = "Chart";
-  function handleDisplayModeChange(event) {
-    displayMode = event.detail.mode;
-  }
+  let displayMode = 'Chart';
+  displayModeStore.subscribe((value) => {
+    displayMode = value;
+  })
 
   function clearChart() {
     chartRef.clearChartData();
@@ -132,18 +132,16 @@
     bind:defaultVoltage
     on:start={onStart}
     on:connect={onConnect}
-    on:displayModeChange={handleDisplayModeChange}
   />
 
   <main>
-    {#if displayMode === "Chart"}
+    {#if displayMode === 'Chart'}
       <Chart
         bind:numPoints
         bind:this={chartRef}
         bind:isPeriodicSampling
-        {displayMode}
       />
-    {:else}
+    {:else if displayMode === 'Numeric'}
       <NumericDisplay />
     {/if}
   </main>
