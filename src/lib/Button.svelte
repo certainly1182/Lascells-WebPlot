@@ -36,6 +36,7 @@
     font-weight: 600;
     transition: 0.3s;
     height: 40px;
+    z-index: 100;
   }
 
   button:hover {

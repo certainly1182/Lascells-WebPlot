@@ -32,6 +32,11 @@
 </section>
 
 <style>
+  @font-face {
+    font-family: 'DSEG7Modern-Bold';
+    src: url('/fonts/dseg/DSEG7Modern-Bold.woff') format('woff');
+  }
+
   .panel {
     position: absolute;
     z-index: 900;
@@ -51,8 +56,8 @@
   }
 
   .digits {
-    font-family: 'Seven Segment', sans-serif;
-    font-size: 40vh;
+    font-family: 'DSEG7Modern-Bold', sans-serif;
+    font-size: 20vw;
     color: black;
     text-align: center;
   }
