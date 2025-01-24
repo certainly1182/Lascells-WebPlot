@@ -135,15 +135,15 @@
   />
 
   <main>
-    {#if displayMode === 'Chart'}
-      <Chart
-        bind:numPoints
-        bind:this={chartRef}
-        bind:isPeriodicSampling
-      />
-    {:else if displayMode === 'Numeric'}
-      <NumericDisplay />
-    {/if}
+    <Chart
+      bind:numPoints
+      bind:this={chartRef}
+      bind:isPeriodicSampling
+      hidden={displayMode !== 'Chart'}
+    />
+    <NumericDisplay
+      hidden={displayMode !== 'Numeric'}
+    />
   </main>
 
   <Footer />

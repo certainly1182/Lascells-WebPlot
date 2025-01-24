@@ -15,6 +15,8 @@
   import { createSineWaveData } from "../js/utils";
   import YAxisTriangleControl from "./YAxisTriangleControl.svelte";
 
+  export let hidden = false;
+
   let chart;
   let currentProduct;
   productStore.subscribe((value) => {

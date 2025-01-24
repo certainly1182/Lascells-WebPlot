@@ -64,6 +64,7 @@
   .menu-wrapper {
     display: flex;
     align-content: center;
+    z-index: 60;
   }
 
   .menu-input {

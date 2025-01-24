@@ -6,6 +6,8 @@
   } from "../js/store";
   import PanelMeter from "./PanelMeter.svelte";
 
+  export let hidden = false;
+
   let latestValue = null;
   let currentProduct;
 
@@ -44,19 +46,27 @@
   $: $serialLineStore, updateLatestValue($serialLineStore);
 </script>
 
+{#if !hidden}
 <div class="numeric-display">
   <PanelMeter
     value={latestValue !== null ? latestValue : 0}
     unit={currentProduct?.unit || "V"}
   />
 </div>
+{/if}
 
 <style>
   .numeric-display {
+    position: absolute;
+    top: 4rem;
+    bottom: 4rem;
+    left: 0;
+    width: 100%;
+    height: calc(100vh - 8rem);
     display: flex;
     justify-content: center;
     align-items: center;
-    height: calc(100vh - 8rem);
-    width: 100%;
+    z-index: 20;
+    background-color: white;
   }
 </style>
