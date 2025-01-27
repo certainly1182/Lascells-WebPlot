@@ -21,7 +21,6 @@
   let numPoints;
 
   let periodOptions = [
-    "1ms",
     "2ms",
     "5ms",
     "10ms",
