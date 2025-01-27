@@ -9,17 +9,22 @@
   function handleExport() {
     exportFullDataToCSV();
   }
+
+  function handleReset() {
+    dispatch("reset_view");
+  }
 </script>
 
 <div class="chart-controls">
+  <button class="export-button" on:click={handleReset}> Reset View </button>
   <button class="export-button" on:click={handleExport}> Export to CSV </button>
 </div>
 
 <style>
   .chart-controls {
     position: fixed;
-    bottom: 4rem;
-    right: 0.5rem;
+    bottom: 3.7rem;
+    right: 0rem;
     padding: 0.5rem;
     z-index: 10;
   }

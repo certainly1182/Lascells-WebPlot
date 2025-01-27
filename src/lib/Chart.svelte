@@ -15,8 +15,6 @@
   import { createSineWaveData } from "../js/utils";
   import YAxisTriangleControl from "./YAxisTriangleControl.svelte";
 
-  export let hidden = false;
-
   let chart;
   let currentProduct;
   productStore.subscribe((value) => {
@@ -356,6 +354,29 @@
     }
   }
 
+  export function resetView() {
+    if (chart) {
+      const yMin = Math.min(...chartData[1]) - 1.01;
+      const yMax = Math.max(...chartData[1]) + 1.01;
+      // Reset x-axis scale to full range
+      chart.batch(() => {
+        chart.setScale("x", {
+          min: Math.min(...chartData[0]),
+          max: chartData[0].length - 1
+        });
+
+        // Reset y-axis to initial range or autoscale
+        chart.setScale("y", {
+          min: yMin,
+          max: yMax,
+        });
+      });
+
+      // Reset manual Y scale to initial values
+      manualYScale = { min: yMin, max: yMax };
+    }
+  }
+
   onMount(() => {
     chart = createChart();
     window.addEventListener("resize", () => {
@@ -378,7 +399,7 @@
         on:autoscaleYAxis={autoscaleYAxis}
       />
     </div>
-    <!-- <ChartControls on:autoscale={autoscaleYAxis} /> -->
+    <ChartControls on:reset_view={resetView} />
     <div style="position: fixed; bottom: 5rem; left: 1px; z-index: 15;">
       <YAxisTriangleControl
         type="min"

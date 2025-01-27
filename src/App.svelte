@@ -139,7 +139,6 @@
       bind:numPoints
       bind:this={chartRef}
       bind:isPeriodicSampling
-      hidden={displayMode !== 'Chart'}
     />
     <NumericDisplay
       hidden={displayMode !== 'Numeric'}
