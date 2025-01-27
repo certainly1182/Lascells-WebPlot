@@ -3,6 +3,7 @@ import {
   fullDataStore,
   isPeriodicSamplingStore,
   connectionStatusStore,
+  showToast,
 } from "./store.js";
 import { parsePeriodString } from "./utils.js";
 
@@ -39,6 +40,8 @@ export async function serialConnect(baudrate) {
       connected: false,
       error: "Failed to connect to device: " + error.message,
     });
+
+    throw error;
   }
 
   fullDataStore.set([]);
@@ -48,6 +51,7 @@ function handleDisconnection(message) {
   console.error(message);
   run = false;
   connectionStatusStore.set({ connected: false, error: message });
+  showToast(message);
 
   if (reader) {
     try {

@@ -30,3 +30,8 @@ export const connectionStatusStore = writable({ connected: false, error: null })
 
 export const displayModeOptions = ['Graph', 'Numeric'];
 export const displayModeStore = writable(displayModeOptions[0]);
+
+export const toastStore = writable(null);
+export function showToast(message) {
+  toastStore.set(message);
+}

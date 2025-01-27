@@ -5,7 +5,7 @@
   import ToggleSwitch from "./ToggleSwitch.svelte";
   import ProductMenu from "./ProductMenu.svelte";
   import { parsePeriodString } from "../js/utils";
-  import { productStore, isPeriodicSamplingStore, displayModeStore } from "../js/store";
+  import { productStore, isPeriodicSamplingStore, displayModeStore, connectionStatusStore } from "../js/store";
   import { sendSerialCommand } from "../js/serial";
 
   export let connected;
@@ -56,16 +56,27 @@
     displayModeStore.set(displayMode);
   }
 
+  let connectionStatus;
+  connectionStatusStore.subscribe(status => {
+    connectionStatus = status;
+    connected = status.connected;
+  });
+
   let connectButtonText;
   let connectButtonIcon;
   let connectButtonTitle;
-  $: if ("serial" in navigator) {
-    connectButtonText = !connected ? "Connect" : "Disconnect";
-    connectButtonIcon = !connected ? "plug-circle-plus" : "plug-circle-xmark";
-    connectButtonTitle = !connected ? "Connect" : "Disconnect";
-  } else {
-    connectButtonText = "Browser doesn't support WebSerial";
-  }
+  $: connectButtonText = "serial" in navigator 
+    ? (!connected ? "Connect" : "Disconnect")
+    : "Browser doesn't support WebSerial";
+  $: connectButtonIcon = !connected ? "plug-circle-plus" : "plug-circle-xmark";
+  $: connectButtonTitle = !connected 
+    ? "Connect" 
+    : connectionStatus?.error 
+      ? `Error: ${connectionStatus.error}`
+      : "Disconnect";
+  $: connectButtonColor = connectionStatus?.error 
+    ? "red" 
+    : "var(--primary)";
 
   // Variable to control sampling mode
   let isPeriodicSampling;
@@ -139,7 +150,7 @@
       <Button
         icon={connectButtonIcon}
         title={connectButtonTitle}
-        --background-color="var(--primary)"
+        --background-color={connectButtonColor}
         --color="var(--on-primary)"
         on:click={onConnect}
       />

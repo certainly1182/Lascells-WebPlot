@@ -8,8 +8,9 @@
     sendConfigCommand,
     sendSerialCommand,
   } from "./js/serial";
-  import { serialLineStore, isPeriodicSamplingStore, displayModeStore } from "./js/store.js";
+  import { serialLineStore, isPeriodicSamplingStore, displayModeStore, connectionStatusStore, showToast } from "./js/store.js";
 
+  import Toast from "./lib/Toast.svelte";
   import Header from "./lib/Header.svelte";
   import Chart from "./lib/Chart.svelte";
   import NumericDisplay from "./lib/NumericDisplay.svelte";
@@ -64,15 +65,23 @@
   }
 
   async function connect() {
-    await serialConnect(115200);
-    connected = true;
+    try {
+      await serialConnect(115200);
+      connected = true;
+    } catch (error) {
+      connected = false;
+      showToast(error.message || "Failed to connect to device");
+    }
   }
 
   function disconnect() {
-    serialDisconnect();
-    connected = false;
-    started = false;
-    $serialLineStore = "";
+    try {
+      serialDisconnect();
+    } finally {
+      connected = false;
+      started = false;
+      $serialLineStore = "";
+    }
   }
 
   function onStart() {
@@ -118,6 +127,7 @@
 </script>
 
 <div id="app">
+  <Toast />
   <Header
     bind:connected
     bind:started

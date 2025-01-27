@@ -7,6 +7,7 @@
     fullDataStore,
     productStore,
     transformVoltageData,
+    showToast
   } from "../js/store";
   import uPlot from "uplot";
   import "uplot/dist/uPlot.min.css";
@@ -321,6 +322,7 @@
     if (manualYScale.min !== null && newMax <= manualYScale.min) {
       manualYScale.max = manualYScale.min + 0.1; // Set a minimum gap
       isMaxValid = false;
+      showToast("Y-Axis Max < Min");
     } else {
       manualYScale.max = newMax;
       isMaxValid = true;
@@ -335,6 +337,7 @@
     if (manualYScale.max !== null && newMin >= manualYScale.max) {
       manualYScale.min = manualYScale.max - 0.1; // Set a minimum gap
       isMinValid = false;
+      showToast("Y-Axis Min > Max");
     } else {
       manualYScale.min = newMin;
       isMinValid = true;
