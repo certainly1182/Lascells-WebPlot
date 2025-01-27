@@ -10,6 +10,9 @@
 
   let latestValue = null;
   let currentProduct;
+  let valueBuffer = [];
+  let lastUpdateTime = Date.now();
+  const UPDATE_INTERVAL = 500;  // ms
 
   productStore.subscribe((value) => {
     currentProduct = value;
@@ -31,14 +34,26 @@
     return data;
   }
 
+  function calculateAverage(values) {
+    if (values.length === 0) return 0;
+    const sum = values.reduce((acc, val) => acc + val, 0);
+    return sum / values.length;
+  }
+
   function updateLatestValue(line) {
     if (line.length === 0 || line === "undefined") return;
 
     const transformedLine = transformVoltageData(line, currentProduct.scale);
     const data = parseLine(transformedLine);
     if (data.length >= 2) {
-      // Assuming first value is time/index and second is measurement
-      latestValue = data[1];
+      const currentTime = Date.now();
+      valueBuffer.push(data[1]);
+
+      if (currentTime - lastUpdateTime >= UPDATE_INTERVAL) {
+        latestValue = calculateAverage(valueBuffer);
+        valueBuffer = [];
+        lastUpdateTime = currentTime;
+      }
     }
   }
 

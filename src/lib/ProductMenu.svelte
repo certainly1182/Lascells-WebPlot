@@ -13,7 +13,7 @@
     {
       name: "Hall Effect Probe",
       sku: "LA10-550B",
-      image: "public/product_icons/LA10-550_hall_effect_probe.webp",
+      image: "/product_icons/LA10-550_hall_effect_probe.webp",
       imageAlt: "Hall Effect Probe",
       unit: "Millitesla (mT)",
       scale: 32,
@@ -22,7 +22,7 @@
     {
       name: "E-Field Detector",
       sku: "LA10-990",
-      image: "public/product_icons/LA10-990-E-Field-Detector.webp",
+      image: "/product_icons/LA10-990-E-Field-Detector.webp",
       imageAlt: "E-Field Detector",
       unit: "Picocoulombs (pC)",
       scale: 100,
@@ -39,7 +39,7 @@
     {
       name: "Boyles Law Digital Apparatus",
       sku: "LA30-217",
-      image: "public/product_icons/LA30-217_Boyles_law.webp",
+      image: "/product_icons/LA30-217_Boyles_law.webp",
       imageAlt: "Boyles Law Digital Apparatus",
       unit: "Kilopascal (kPa)",
       scale: 100,
@@ -48,7 +48,7 @@
     {
       name: "Digital Jolly Bulb",
       sku: "LA30-216",
-      image: "public/product_icons/LA30-216_digital_joly.webp",
+      image: "/product_icons/LA30-216_digital_joly.webp",
       imageAlt: "Digital Jolly Bulb",
       unit: "Kilopascal (kPa)",
       scale: 100,
@@ -57,7 +57,7 @@
     {
       name: "Malus' Law",
       sku: "LA20-875",
-      image: "public/product_icons/LA20-875_Maluss_law.webp",
+      image: "/product_icons/LA20-875_Maluss_law.webp",
       imageAlt: "Malus' Law",
       unit: "Intensity",
       scale: 1,
