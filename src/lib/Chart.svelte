@@ -7,12 +7,11 @@
     fullDataStore,
     productStore,
     transformVoltageData,
-    showToast
+    showToast,
   } from "../js/store";
   import uPlot from "uplot";
   import "uplot/dist/uPlot.min.css";
   import ChartControls from "./ChartControls.svelte";
-  import PanelMeter from "./PanelMeter.svelte";
   import { createSineWaveData } from "../js/utils";
   import YAxisTriangleControl from "./YAxisTriangleControl.svelte";
 
@@ -23,6 +22,7 @@
     if (chart) {
       chart.axes[1].label = `${currentProduct.unit}`;
       chart.redraw();
+      resetView();
     }
   });
   export let isPeriodicSampling;
@@ -34,6 +34,8 @@
     chart.axes[0].label = xAxisLabel;
     chart.redraw();
   }
+
+  export let voltageString;
 
   export let numPoints;
   const maxLines = 30;
@@ -190,14 +192,18 @@
 
   function autoscaleYAxis() {
     if (chart) {
-      // Perform one-time autoscale
+      const yMin = Math.min(...chartData[1]) - 0.1;
+      const yMax = Math.max(...chartData[1]) + 0.1;
       chart.batch(() => {
-        chart.setScale("y", { auto: true });
+        // Reset y-axis to initial range or autoscale
+        chart.setScale("y", {
+          min: yMin,
+          max: yMax,
+        });
       });
-      manualYScale = {
-        min: chart.scales.y.min,
-        max: chart.scales.y.max,
-      };
+
+      // Reset manual Y scale to initial values
+      manualYScale = { min: yMin, max: yMax };
     }
   }
 
@@ -359,23 +365,41 @@
 
   export function resetView() {
     if (chart) {
-      const yMin = Math.min(...chartData[1]) - 1.01;
-      const yMax = Math.max(...chartData[1]) + 1.01;
+      let yMin, yMax;
+
+      if (!currentProduct?.name) {
+        // No product selected - use voltage range from header
+        if (voltageString === "-1 to +1V") {
+          yMin = -1;
+          yMax = 1;
+        } else if (voltageString === "-5 to +5V") {
+          yMin = -5;
+          yMax = 5;
+        } else if (voltageString === "-50 to +50V") {
+          yMin = -50;
+          yMax = 50;
+        }
+      } else {
+        // Product selected - use product's voltage range
+        yMin = currentProduct.yRange.min;
+        yMax = currentProduct.yRange.max;
+      }
+
       // Reset x-axis scale to full range
       chart.batch(() => {
         chart.setScale("x", {
           min: Math.min(...chartData[0]),
-          max: chartData[0].length - 1
+          max: chartData[0].length - 1,
         });
 
-        // Reset y-axis to initial range or autoscale
+        // Set y-axis to determined range
         chart.setScale("y", {
           min: yMin,
           max: yMax,
         });
       });
 
-      // Reset manual Y scale to initial values
+      // Update manual Y scale
       manualYScale = { min: yMin, max: yMax };
     }
   }
@@ -387,7 +411,16 @@
     });
     chart.setSize(getSize());
     chart.setData(chartData);
-    autoscaleYAxis();
+    if (chart) {
+      // Perform one-time autoscale
+      chart.batch(() => {
+        chart.setScale("y", { auto: true });
+      });
+      manualYScale = {
+        min: chart.scales.y.min,
+        max: chart.scales.y.max,
+      };
+    }
   });
 </script>
 

@@ -17,6 +17,7 @@
       imageAlt: "Hall Effect Probe",
       unit: "Millitesla (mT)",
       scale: 32,
+      range: {min: -70, max: 70},
       detailsUrl: "https://lascells.com/product/hall-effect-probe/",
     },
     {
@@ -26,15 +27,16 @@
       imageAlt: "E-Field Detector",
       unit: "Picocoulombs (pC)",
       scale: 100,
+      range: {min: -102.4, max: 102.4},
       detailsUrl: "https://lascells.com/product/e-field-detector/",
-      hasSettings: true,
-      settings: {
-        highSensitivity: true,
-        scales: {
-          high: 100, // 60mV = 6pC (ratio of 100)
-          low: 10000, // 60mV = 600pC (ratio of 10000)
-        },
-      },
+      // hasSettings: true,
+      // settings: {
+      //   highSensitivity: true,
+      //   scales: {
+      //     high: 100, // 60mV = 6pC (ratio of 100)
+      //     low: 10000, // 60mV = 600pC (ratio of 10000)
+      //   },
+      // },
     },
     {
       name: "Boyles Law Digital Apparatus",
@@ -43,6 +45,7 @@
       imageAlt: "Boyles Law Digital Apparatus",
       unit: "Kilopascal (kPa)",
       scale: 100,
+      range: {min: 0, max: 200},
       detailsUrl: "https://lascells.com/product/boyles-law-digital-apparatus/",
     },
     {
@@ -52,6 +55,7 @@
       imageAlt: "Digital Jolly Bulb",
       unit: "Kilopascal (kPa)",
       scale: 100,
+      range: {min: 0, max: 200},
       detailsUrl: "https://lascells.com/product/digital-jolly-bulb/",
     },
     {
@@ -61,6 +65,7 @@
       imageAlt: "Malus' Law",
       unit: "Relative Intensity",
       scale: 1,
+      range: {min: 0, max: 1},
       detailsUrl: "https://lascells.com/product/malus-law/",
     },
   ];
@@ -73,7 +78,7 @@
 
   function clearSelection() {
     selectedProduct = null;
-    productStore.set({ name: null, scale: 1, unit: 'Volts (V)' });
+    productStore.set({ name: null, scale: 1, unit: 'Volts (V)', yRange: null });
     dispatch("clearSelection");
   }
 
@@ -85,7 +90,8 @@
       scale: product.hasSettings 
         ? product.settings.scales[product.settings.highSensitivity ? "high" : "low"]
         : product.scale,
-      unit: product.unit
+      unit: product.unit,
+      yRange: product.range,
     });
 
     dispatch("selectProduct", {

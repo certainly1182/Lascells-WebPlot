@@ -114,16 +114,24 @@
         options={displayModeOptions}
         on:change={onDisplayModeChange}
       />
-      <button
-        class="product-dropdown"
-        on:click={() => (isModalOpen = true)}
-        aria-haspopup="true"
-        aria-expanded={isModalOpen}
-        disabled={started}
-      >
-        <span class="product-name">{selectedProductName}</span>
-        <span class="dropdown-arrow">▼</span>
-      </button>
+      <div class="product-wrapper">
+        <button
+          class="product-dropdown"
+          on:click={() => (isModalOpen = true)}
+          aria-haspopup="true"
+          aria-expanded={isModalOpen}
+          disabled={started}
+        >
+          <span class="product-name">{selectedProductName}</span>
+        </button>
+        <button 
+          class="dropdown-arrow-button" 
+          on:click={() => (isModalOpen = true)}
+          disabled={started}
+        >
+          ▼
+        </button>
+      </div>
 
       <ProductMenu
         isOpen={isModalOpen}
@@ -218,6 +226,7 @@
   .top-row {
     justify-content: space-between;
     border-bottom: 1px solid var(--border-color);
+    z-index: 100000;
   }
 
   .bottom-row {
@@ -241,31 +250,57 @@
     gap: 0.5rem;
   }
 
-  .product-dropdown {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    height: 40px;
-    padding: 0 15px;
-    background-color: white;
-    color: black;
-    border: 2px solid var(--tertiary);
-    border-radius: 20px;
-    cursor: pointer;
-    font-size: 16px;
-    min-width: 180px;
-    justify-content: space-between;
-    transition: background-color 0.2s;
-  }
+  .product-wrapper {
+  display: flex;
+  align-content: center;
+  z-index: 60;
+}
 
-  .product-name {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 150px;
-  }
+.product-dropdown {
+  background-color: transparent;
+  padding: 0 15px;
+  border: 2px solid var(--tertiary);
+  border-radius: 20px 0 0 20px;
+  outline: none;
+  width: 140px;
+  height: 40px;
+  cursor: pointer;
+  line-height: 45px;
+  font-size: 16px;
+  color: var(--tertiary);
+  text-align: left;
+  display: flex;
+  align-items: center;
+}
 
-  .dropdown-arrow {
-    font-size: 0.8rem;
-  }
+.dropdown-arrow-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: transparent;
+  border: 2px solid var(--tertiary);
+  border-radius: 0 20px 20px 0;
+  margin-left: -2px;
+  height: 40px;
+  width: 40px;
+  color: var(--tertiary);
+  transition: 0.2s;
+  cursor: pointer;
+}
+
+/* Disabled states */
+.product-dropdown:disabled,
+.dropdown-arrow-button:disabled {
+  background-color: #f0f0f0;
+  color: #b0b0b0;
+  border-color: #d0d0d0;
+  cursor: not-allowed;
+}
+
+.product-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 150px;
+}
 </style>

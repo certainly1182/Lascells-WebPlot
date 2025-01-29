@@ -54,6 +54,13 @@
     isPeriodicSampling = value;
   });
 
+  $: updateVoltage(voltageString);
+  function updateVoltage(newVoltage) {
+    if (chartRef) {
+      chartRef.resetView();
+    }
+  }
+
   let displayMode = 'Chart';
   displayModeStore.subscribe((value) => {
     displayMode = value;
@@ -107,7 +114,6 @@
   }
 
   import { onMount, onDestroy } from "svelte";
-  import PanelMeter from "./lib/PanelMeter.svelte";
 
   onMount(() => {
     window.addEventListener("keydown", handleSpacebar);
@@ -148,6 +154,7 @@
       bind:numPoints
       bind:this={chartRef}
       bind:isPeriodicSampling
+      bind:voltageString
     />
     <NumericDisplay
       hidden={displayMode !== 'Numeric'}

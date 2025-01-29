@@ -7,6 +7,7 @@ export const productStore = writable({
   name: null,
   scale: 1,
   unit: "Volts (V)",
+  yRange: null  // {min: number, max: number}
 });
 
 export function transformVoltageData(voltageData, scale = 1) {

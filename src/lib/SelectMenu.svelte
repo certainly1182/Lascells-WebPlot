@@ -99,7 +99,7 @@
   .menu-options {
     position: absolute;
     background-color: var(--background-secondary);
-    margin-top: 60px;
+    margin-top: 40px;
     width: 170px;
     border-radius: 8px;
     z-index: 100;
