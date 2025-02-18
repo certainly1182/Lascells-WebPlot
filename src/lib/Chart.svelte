@@ -436,7 +436,7 @@
       />
     </div>
     <ChartControls on:reset_view={resetView} />
-    <div style="position: fixed; bottom: 5rem; left: 1px; z-index: 15;">
+    <div style="position: fixed; bottom: 4rem; left: 1px; z-index: 15;">
       <YAxisTriangleControl
         type="min"
         bind:value={manualYScale.min}

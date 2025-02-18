@@ -41,7 +41,7 @@
       position: fixed;
       top: 1rem;
       right: 1rem;
-      z-index: 9000;
+      z-index: 9000000;
       background: #f44336;
       color: white;
       padding: 1rem;

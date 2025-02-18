@@ -81,7 +81,7 @@
 
   /* Input box styles */
   .y-axis-input {
-    width: 3rem;
+    width: 3.5rem;
     background: white;
     border: 1px solid #26488b;
     border-radius: 4px;

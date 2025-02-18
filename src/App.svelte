@@ -37,11 +37,11 @@
     "30s",
     "1min",
   ];
-  let defaultPeriod = periodOptions[6];
+  let defaultPeriod = periodOptions[5];
   let periodString = defaultPeriod;
 
-  let voltageOptions = ["-1 to +1V", "-5 to +5V", "-50 to +50V"];
-  let defaultVoltage = voltageOptions[2];
+  let voltageOptions = ["-1 to +1V", "-20 to +20V", "-200 to +200V"];
+  let defaultVoltage = voltageOptions[1];
   let voltageString = defaultVoltage;
 
   let connected = false;
