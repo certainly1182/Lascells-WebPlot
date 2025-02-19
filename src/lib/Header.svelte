@@ -5,7 +5,7 @@
   import ToggleSwitch from "./ToggleSwitch.svelte";
   import ProductMenu from "./ProductMenu.svelte";
   import { parsePeriodString } from "../js/utils";
-  import { productStore, isPeriodicSamplingStore, displayModeStore, connectionStatusStore } from "../js/store";
+  import { productStore, isPeriodicSamplingStore, displayModeStore, connectionStatusStore, voltageRangeStore, voltageRanges, defaultVoltageRange } from "../js/store";
   import { sendSerialCommand } from "../js/serial";
 
   export let connected;
@@ -19,9 +19,10 @@
   export let periodString;
   export let defaultPeriod;
 
-  export let voltageOptions;
   export let voltageString;
-  export let defaultVoltage;
+  voltageRangeStore.subscribe(value => {
+    voltageString = value;
+  });
 
   const displayModeOptions = ['Graph', 'Numeric'];
   let displayMode = displayModeOptions[0];
@@ -94,7 +95,7 @@
   }
 
   function voltageRangeChange(event) {
-    const selectedVoltage = event.detail.selected;
+    voltageRangeStore.set(event.detail.selected);
   }
 </script>
 
@@ -192,8 +193,8 @@
       <SelectMenu
         tooltip="Voltage Range"
         bind:selectedOption={voltageString}
-        options={voltageOptions}
-        defaultOption={defaultVoltage}
+        options={voltageRanges}
+        defaultOption={defaultVoltageRange}
         on:change={voltageRangeChange}
         disabled={started}
       />

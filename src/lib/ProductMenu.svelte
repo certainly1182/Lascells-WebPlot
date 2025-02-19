@@ -1,7 +1,7 @@
 <script>
   import { createEventDispatcher } from "svelte";
   const dispatch = createEventDispatcher();
-  import { productStore } from "../js/store";
+  import { productStore, voltageRangeStore, defaultVoltageRange } from "../js/store";
 
   import ToggleSwitch from "./ToggleSwitch.svelte";
 
@@ -18,6 +18,7 @@
       unit: "Millitesla (mT)",
       scale: 32,
       range: {min: -70, max: 70},
+      voltageRange: "-2 to +2V",
       detailsUrl: "https://lascells.com/product/hall-effect-probe/",
     },
     {
@@ -28,6 +29,7 @@
       unit: "Picocoulombs (pC)",
       scale: 100,
       range: {min: -102.4, max: 102.4},
+      voltageRange: "-20 to +20V",
       detailsUrl: "https://lascells.com/product/e-field-detector/",
       // hasSettings: true,
       // settings: {
@@ -46,6 +48,7 @@
       unit: "Kilopascal (kPa)",
       scale: 100,
       range: {min: 0, max: 200},
+      voltageRange: "-2 to +2V",
       detailsUrl: "https://lascells.com/product/boyles-law-digital-apparatus/",
     },
     {
@@ -56,6 +59,7 @@
       unit: "Kilopascal (kPa)",
       scale: 100,
       range: {min: 0, max: 200},
+      voltageRange: "-2 to +2V",
       detailsUrl: "https://lascells.com/product/digital-jolly-bulb/",
     },
     {
@@ -66,6 +70,7 @@
       unit: "Relative Intensity",
       scale: 1,
       range: {min: 0, max: 1},
+      voltageRange: "-20 to +20V",
       detailsUrl: "https://lascells.com/product/malus-law/",
     },
   ];
@@ -78,7 +83,8 @@
 
   function clearSelection() {
     selectedProduct = null;
-    productStore.set({ name: null, scale: 1, unit: 'Volts (V)', yRange: null });
+    productStore.set({ name: null, scale: 1, unit: 'Volts (V)', yRange: null, voltageRange: defaultVoltageRange });
+    voltageRangeStore.set(defaultVoltageRange);
     dispatch("clearSelection");
   }
 
@@ -92,7 +98,10 @@
         : product.scale,
       unit: product.unit,
       yRange: product.range,
+      voltageRange: product.voltageRange,
     });
+
+    voltageRangeStore.set(product.voltageRange);
 
     dispatch("selectProduct", {
       product: {

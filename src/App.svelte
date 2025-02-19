@@ -8,7 +8,7 @@
     sendConfigCommand,
     sendSerialCommand,
   } from "./js/serial";
-  import { serialLineStore, isPeriodicSamplingStore, displayModeStore, connectionStatusStore, showToast } from "./js/store.js";
+  import { serialLineStore, isPeriodicSamplingStore, displayModeStore, connectionStatusStore, showToast, voltageRangeStore, defaultVoltageRange } from "./js/store.js";
 
   import Toast from "./lib/Toast.svelte";
   import Header from "./lib/Header.svelte";
@@ -39,15 +39,19 @@
   ];
   let defaultPeriod = periodOptions[5];
   let periodString = defaultPeriod;
+  
+  let chartRef;
 
-  let voltageOptions = ["-1 to +1V", "-20 to +20V", "-200 to +200V"];
-  let defaultVoltage = voltageOptions[1];
-  let voltageString = defaultVoltage;
+  let voltageString;
+  voltageRangeStore.subscribe(value => {
+    voltageString = value;
+    if (chartRef) {
+      chartRef.resetView();
+    }
+  });
 
   let connected = false;
   let started = false;
-
-  let chartRef;
 
   let isPeriodicSampling = true;
   isPeriodicSamplingStore.subscribe((value) => {
@@ -143,8 +147,6 @@
     {periodOptions}
     bind:defaultPeriod
     bind:voltageString
-    {voltageOptions}
-    bind:defaultVoltage
     on:start={onStart}
     on:connect={onConnect}
   />
