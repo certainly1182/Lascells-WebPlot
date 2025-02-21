@@ -4,6 +4,7 @@ import {
   isPeriodicSamplingStore,
   connectionStatusStore,
   showToast,
+  deviceInfoStore,
 } from "./store.js";
 import { parsePeriodString } from "./utils.js";
 
@@ -18,15 +19,81 @@ isPeriodicSamplingStore.subscribe((value) => {
   isPeriodicSampling = value;
 });
 
+async function readIdResponse(portInfo) {
+  let response = '';
+  const idResponseTimeout = 1000; // 1 second timeout
+  
+  // Create abort controller for timeout
+  const abortController = new AbortController();
+  const signal = abortController.signal;
+  
+  // Set timeout
+  const timeoutId = setTimeout(() => {
+    abortController.abort();
+  }, idResponseTimeout);
+
+  try {
+    while (true) {
+      // Use Promise.race to handle timeout
+      const { value, done } = await Promise.race([
+        reader.read(),
+        new Promise((_, reject) => {
+          signal.addEventListener('abort', () => {
+            reject(new Error('Timeout waiting for device ID'));
+          });
+        })
+      ]);
+      
+      if (done) {
+        throw new Error("Serial port closed while waiting for ID");
+      }
+
+      response += decoder.decode(value);
+      
+      if (response.includes('\n')) {
+        response = response.trim();
+        if (response.startsWith("ID=")) {
+          const deviceId = response.substring(3).trim();
+          const deviceName = getDeviceId(deviceId);
+          deviceInfoStore.set({ 
+            id: deviceId, 
+            name: deviceName
+          });
+          return;
+        }
+      }
+    }
+  } catch (error) {
+    console.error("Error reading ID response:", error);
+    // Release the reader lock and cleanup
+    reader.releaseLock();
+    reader = port.readable.getReader();
+    throw error;
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
+function getDeviceId(deviceId) {
+  const deviceMap = {
+    'VOLT0': 'USB Voltmeter',
+    // Add more device mappings as needed
+  };
+  return deviceMap[deviceId] || 'Unknown Device';
+}
+
 export async function serialConnect(baudrate) {
   try {
     port = await navigator.serial.requestPort();
     await port.open({ baudRate: baudrate });
     reader = port.readable.getReader();
     run = true;
-    console.log("Serial port opened successfully:", port);
+    console.log("Serial port opened successfully");
     connectionStatusStore.set({ connected: true, error: null });
     fullDataStore.set([]);
+
+    await sendSerialCommand(">ID\n");
+    await readIdResponse();
 
     // Listen for disconnect events
     navigator.serial.addEventListener("disconnect", (event) => {
@@ -74,6 +141,7 @@ function handleDisconnection(message) {
 }
 
 export function serialDisconnect() {
+  deviceInfoStore.set({id:null, name:"None"});
   try {
     serialStop();
     if (reader) {
@@ -234,9 +302,9 @@ export async function sendConfigCommand(periodString, voltageString) {
 
     const voltageCode = {
       Auto: "0",
-      "-1 to +1V": "1",
-      "-5 to +5V": "2",
-      "-50 to +50V": "3",
+      "-2 to +2V": "1",
+      "-20 to +20V": "2",
+      "-200 to +200V": "3",
     }[voltageString];
 
     if (!voltageCode) {

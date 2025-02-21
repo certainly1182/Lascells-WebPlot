@@ -5,7 +5,7 @@
   import ToggleSwitch from "./ToggleSwitch.svelte";
   import ProductMenu from "./ProductMenu.svelte";
   import { parsePeriodString } from "../js/utils";
-  import { productStore, isPeriodicSamplingStore, displayModeStore, connectionStatusStore, voltageRangeStore, voltageRanges, defaultVoltageRange } from "../js/store";
+  import { productStore, isPeriodicSamplingStore, displayModeStore, connectionStatusStore, voltageRangeStore, voltageRanges, defaultVoltageRange, deviceInfoStore } from "../js/store";
   import { sendSerialCommand } from "../js/serial";
 
   export let connected;
@@ -22,6 +22,11 @@
   export let voltageString;
   voltageRangeStore.subscribe(value => {
     voltageString = value;
+  });
+
+  let deviceInfo;
+  deviceInfoStore.subscribe(value => {
+    deviceInfo = value;
   });
 
   const displayModeOptions = ['Graph', 'Numeric'];
@@ -107,6 +112,10 @@
       alt="logo"
       loading="lazy"
     />
+    <div class="device-info">
+      <i class="fa-solid fa-link"></i>
+      <span class="device-name">{deviceInfo.name}</span>
+    </div>
 
     <div class="primary-controls">
       <SelectMenu
@@ -237,6 +246,19 @@
   #logo {
     height: 2.5rem;
     width: auto;
+  }
+  
+  .device-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--tertiary);
+  }
+
+  .device-name {
+    color: var(--tertiary);
+    font-size: 1rem;
+    font-weight: 500;
   }
 
   .primary-controls, .secondary-controls {

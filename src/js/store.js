@@ -3,6 +3,11 @@ import { writable } from "svelte/store";
 export const serialLineStore = writable("");
 export const fullDataStore = writable([]);
 
+export const deviceInfoStore = writable({
+  id: null,
+  name: "None"
+})
+
 export const voltageRanges = ["-2 to +2V", "-20 to +20V"];
 export const defaultVoltageRange = voltageRanges[1];
 export const voltageRangeStore = writable(defaultVoltageRange);
