@@ -85,15 +85,15 @@ function getDeviceId(deviceId) {
 export async function serialConnect(baudrate) {
   try {
     port = await navigator.serial.requestPort();
-    await port.open({ baudRate: baudrate });
+    await port.open({ baudRate: baudrate, bufferSize: 65536 });
     reader = port.readable.getReader();
     run = true;
     console.log("Serial port opened successfully");
     connectionStatusStore.set({ connected: true, error: null });
     fullDataStore.set([]);
 
-    await sendSerialCommand(">ID\n");
-    await readIdResponse();
+    // await sendSerialCommand(">ID\n");
+    // await readIdResponse();
 
     // Listen for disconnect events
     navigator.serial.addEventListener("disconnect", (event) => {

@@ -435,7 +435,8 @@
         on:autoscaleYAxis={autoscaleYAxis}
       />
     </div>
-    <ChartControls on:reset_view={resetView} />
+    <ChartControls
+    on:reset_view={resetView} />
     <div style="position: fixed; bottom: 4rem; left: 1px; z-index: 15;">
       <YAxisTriangleControl
         type="min"

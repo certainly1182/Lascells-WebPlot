@@ -10,6 +10,10 @@
     exportFullDataToCSV();
   }
 
+  function handleClear() {
+    dispatch("clear_view");
+  }
+
   function handleReset() {
     dispatch("reset_view");
   }
@@ -17,6 +21,7 @@
 
 <div class="chart-controls">
   <button class="export-button" on:click={handleReset}> Reset View </button>
+  <!-- <button class="export-button" on:click={handleReset}> Clear Data </button> -->
   <button class="export-button" on:click={handleExport}> Export to CSV </button>
 </div>
 

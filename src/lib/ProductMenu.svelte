@@ -1,7 +1,11 @@
 <script>
   import { createEventDispatcher } from "svelte";
   const dispatch = createEventDispatcher();
-  import { productStore, voltageRangeStore, defaultVoltageRange } from "../js/store";
+  import {
+    productStore,
+    voltageRangeStore,
+    defaultVoltageRange,
+  } from "../js/store";
 
   import ToggleSwitch from "./ToggleSwitch.svelte";
 
@@ -17,7 +21,7 @@
       imageAlt: "Hall Effect Probe",
       unit: "Millitesla (mT)",
       scale: 32,
-      range: {min: -70, max: 70},
+      range: { min: -70, max: 70 },
       voltageRange: "-2 to +2V",
       detailsUrl: "https://lascells.com/product/hall-effect-probe/",
     },
@@ -28,7 +32,7 @@
       imageAlt: "E-Field Detector",
       unit: "Picocoulombs (pC)",
       scale: 100,
-      range: {min: -102.4, max: 102.4},
+      range: { min: -102.4, max: 102.4 },
       voltageRange: "-20 to +20V",
       detailsUrl: "https://lascells.com/product/e-field-detector/",
       // hasSettings: true,
@@ -47,7 +51,7 @@
       imageAlt: "Boyles Law Digital Apparatus",
       unit: "Kilopascal (kPa)",
       scale: 100,
-      range: {min: 0, max: 200},
+      range: { min: 0, max: 200 },
       voltageRange: "-2 to +2V",
       detailsUrl: "https://lascells.com/product/boyles-law-digital-apparatus/",
     },
@@ -58,7 +62,7 @@
       imageAlt: "Digital Jolly Bulb",
       unit: "Kilopascal (kPa)",
       scale: 100,
-      range: {min: 0, max: 200},
+      range: { min: 0, max: 200 },
       voltageRange: "-2 to +2V",
       detailsUrl: "https://lascells.com/product/digital-jolly-bulb/",
     },
@@ -69,7 +73,7 @@
       imageAlt: "Malus' Law",
       unit: "Relative Intensity",
       scale: 1,
-      range: {min: 0, max: 1},
+      range: { min: 0, max: 1 },
       voltageRange: "-20 to +20V",
       detailsUrl: "https://lascells.com/product/malus-law/",
     },
@@ -83,7 +87,13 @@
 
   function clearSelection() {
     selectedProduct = null;
-    productStore.set({ name: null, scale: 1, unit: 'Volts (V)', yRange: null, voltageRange: defaultVoltageRange });
+    productStore.set({
+      name: null,
+      scale: 1,
+      unit: "Volts (V)",
+      yRange: null,
+      voltageRange: defaultVoltageRange,
+    });
     voltageRangeStore.set(defaultVoltageRange);
     dispatch("clearSelection");
   }
@@ -93,8 +103,10 @@
 
     productStore.set({
       name: product.name,
-      scale: product.hasSettings 
-        ? product.settings.scales[product.settings.highSensitivity ? "high" : "low"]
+      scale: product.hasSettings
+        ? product.settings.scales[
+            product.settings.highSensitivity ? "high" : "low"
+          ]
         : product.scale,
       unit: product.unit,
       yRange: product.range,
@@ -130,6 +142,7 @@
     <div class="modal-content">
       <button class="close-button" on:click={closeModal}>&times;</button>
       <h2>Select a Product</h2>
+      <p>Select a product to automatically apply the voltage-to-unit conversion.</p>
 
       <div class="product-grid">
         {#each products as product}
@@ -171,13 +184,18 @@
         {/each}
       </div>
 
-      <button
-        class="clear-selection-btn"
-        on:click={clearSelection}
-        disabled={!selectedProduct}
-      >
-        Clear Selection
-      </button>
+      <div class="modal-footer">
+        <button
+          class="clear-selection-btn"
+          on:click={clearSelection}
+          disabled={!selectedProduct}
+        >
+          Clear Selection
+        </button>
+        <button class="confirm-selection-btn" on:click={closeModal}>
+          Confirm Selection
+        </button>
+      </div>
     </div>
   </div>
 {/if}
@@ -222,6 +240,12 @@
     grid-template-columns: repeat(auto-fill, minmax(15vw, 1fr));
     gap: 1rem;
     margin: 2rem 0;
+  }
+
+  .modal-footer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1rem;
   }
 
   .product-tile {
@@ -270,8 +294,6 @@
   }
 
   .clear-selection-btn {
-    display: block;
-    margin: 1rem auto;
     padding: 0.5rem 1rem;
     background-color: #dc3545;
     color: white;
@@ -287,6 +309,19 @@
 
   .clear-selection-btn:not(:disabled):hover {
     background-color: #c82333;
+  }
+
+  .confirm-selection-btn {
+    padding: 0.5rem 1rem;
+    background-color: green;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .confirm-selection-btn:hover {
+    background-color: rgb(0, 99, 0);
   }
 
   .sensitivity-setting {

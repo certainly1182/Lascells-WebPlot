@@ -95,6 +95,36 @@
     isPeriodicSamplingStore.set(checked);
   }
 
+  // Runtime calculation
+  let runtimeString = "0s";
+  let currentPeriodInSeconds = parsePeriodString(periodString || defaultPeriod);
+  let currentPoints = parseInt(numPoints || defaultPoints);
+
+  $: {
+    if (isPeriodicSampling) {
+      currentPeriodInSeconds = parsePeriodString(periodString || defaultPeriod);
+      currentPoints = parseInt(numPoints || defaultPoints);
+      
+      // Calculate total runtime in seconds
+      const totalSeconds = currentPeriodInSeconds * currentPoints;
+      
+      // Format the runtime string
+      if (totalSeconds < 60) {
+        runtimeString = `${totalSeconds.toFixed(1)}s`;
+      } else if (totalSeconds < 3600) {
+        const minutes = Math.floor(totalSeconds / 60);
+        const seconds = totalSeconds % 60;
+        runtimeString = `${minutes}m ${seconds.toFixed(0)}s`;
+      } else {
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        runtimeString = `${hours}h ${minutes}m`;
+      }
+    } else {
+      runtimeString = "Manual";
+    }
+  }
+
   function samplingPeriodChange(event) {
     const period_s = parsePeriodString(event.detail.selected);
   }
@@ -112,10 +142,10 @@
       alt="logo"
       loading="lazy"
     />
-    <div class="device-info">
+    <!-- <div class="device-info">
       <i class="fa-solid fa-link"></i>
       <span class="device-name">{deviceInfo.name}</span>
-    </div>
+    </div> -->
 
     <div class="primary-controls">
       <SelectMenu
@@ -178,6 +208,12 @@
   <div class="header-row bottom-row">
     <div class="secondary-controls">
       <div class="sampling-controls">
+        {#if displayMode === "Graph"}
+        <div class="runtime-display" title="Total time span based on points and sampling period">
+          <span class="runtime-label">Time Span = </span>
+          <span class="runtime-value">{runtimeString}</span>
+        </div>
+        {/if}
         {#if isPeriodicSampling}
           <SelectMenu
             tooltip="Sampling Period"
@@ -198,6 +234,15 @@
           />
         {/if}
       </div>
+      
+      {#if displayMode === "Graph"}
+        <SelectMenu
+          tooltip="Points"
+          bind:selectedOption={numPoints}
+          options={pointsOptions}
+          defaultOption={defaultPoints}
+        />
+      {/if}
 
       <SelectMenu
         tooltip="Voltage Range"
@@ -208,14 +253,6 @@
         disabled={started}
       />
 
-      {#if displayMode === "Graph"}
-        <SelectMenu
-          tooltip="Points"
-          bind:selectedOption={numPoints}
-          options={pointsOptions}
-          defaultOption={defaultPoints}
-        />
-      {/if}
     </div>
   </div>
 </div>
