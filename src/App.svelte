@@ -118,6 +118,7 @@
   }
 
   import { onMount, onDestroy } from "svelte";
+  import GalvanometerDisplay from "./lib/GalvanometerDisplay.svelte";
 
   onMount(() => {
     window.addEventListener("keydown", handleSpacebar);
@@ -160,6 +161,9 @@
     />
     <NumericDisplay
       hidden={displayMode !== 'Numeric'}
+    />
+    <GalvanometerDisplay
+      hidden={displayMode !== 'Galvanometer'}
     />
   </main>
 

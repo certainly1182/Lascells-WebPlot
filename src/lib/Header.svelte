@@ -29,7 +29,7 @@
     deviceInfo = value;
   });
 
-  const displayModeOptions = ['Graph', 'Numeric'];
+  const displayModeOptions = ['Graph', 'Numeric', 'Galvanometer'];
   let displayMode = displayModeOptions[0];
 
   const dispatch = createEventDispatcher();
