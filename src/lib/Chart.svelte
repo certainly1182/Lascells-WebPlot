@@ -381,8 +381,8 @@
         }
       } else {
         // Product selected - use product's voltage range
-        yMin = currentProduct.yRange.min;
-        yMax = currentProduct.yRange.max;
+        yMin = currentProduct.range.min;
+        yMax = currentProduct.range.max;
       }
 
       // Reset x-axis scale to full range

@@ -38,7 +38,7 @@
   function handleProductSelect(event) {
     const selectedProduct = event.detail.product;
     // Handle the selected product
-    console.log("Selected product:", selectedProduct);
+    // console.log("Selected product:", selectedProduct);
   }
 
   let selectedProductName;

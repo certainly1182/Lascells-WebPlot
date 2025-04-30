@@ -91,7 +91,7 @@
       name: null,
       scale: 1,
       unit: "Volts (V)",
-      yRange: null,
+      range: null,
       voltageRange: defaultVoltageRange,
     });
     voltageRangeStore.set(defaultVoltageRange);
@@ -109,7 +109,7 @@
           ]
         : product.scale,
       unit: product.unit,
-      yRange: product.range,
+      range: product.range,
       voltageRange: product.voltageRange,
     });
 

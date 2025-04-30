@@ -9,23 +9,15 @@
 
   let latestValue = null;
   let currentProduct;
+  $: currentProduct = $productStore;
+  $: minValue = currentProduct?.range?.min ?? -20;
+  $: maxValue = currentProduct?.range?.max ?? 20;
 
-  // Galvanometer specific settings
-  let minValue = -20;
-  let maxValue = 20;
+
   let needleAngle = 0; // Starting angle (when value is at minimum)
   const angleRange = 120; // Total range of needle movement in degrees
 
   $: needleRotation = `${needleAngle}deg`;
-
-  productStore.subscribe((value) => {
-    currentProduct = value;
-    // Update min/max based on product settings if available
-    if (currentProduct && currentProduct.range) {
-      minValue = currentProduct.range.min || -20;
-      maxValue = currentProduct.range.max || 20;
-    }
-  });
 
   function parseLine(line) {
     const lineSplit = line.split(",");
@@ -83,7 +75,7 @@
           >
             <div class="tick-line"></div>
             <div class="tick-label">
-              {Math.round(minValue + (i / 8) * (maxValue - minValue))}
+                {(minValue + (i / 8) * (maxValue - minValue)).toFixed(1)}
             </div>
           </div>
 

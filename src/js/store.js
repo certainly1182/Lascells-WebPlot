@@ -16,7 +16,7 @@ export const productStore = writable({
   name: null,
   scale: 1,
   unit: "Volts (V)",
-  yRange: null,  // {min: number, max: number}
+  range: null,  // {min: number, max: number}
   voltageRange: defaultVoltageRange,
 });
 
